@@ -60,6 +60,21 @@
           ></textarea>
         </div>
 
+        <div>
+          <label for="accountId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cuenta de Ahorro</label>
+          <select
+            id="accountId"
+            v-model="form.accountId"
+            required
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          >
+            <option disabled value="">Selecciona una cuenta</option>
+            <option v-for="account in accounts" :key="account._id" :value="account._id">
+              {{ account.name }}
+            </option>
+          </select>
+        </div>
+
         <div class="flex justify-end space-x-3 mt-6">
           <button
             type="button"
@@ -81,7 +96,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 
 export default defineComponent({
   name: 'GoalForm',
@@ -98,8 +113,33 @@ export default defineComponent({
       targetAmount: 0,
       currentAmount: 0,
       targetDate: '',
-      description: ''
+      description: '',
+      accountId: ''
     })
+    
+    const accounts = ref<any[]>([])
+
+    const loadAccounts = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/accounts')
+        if (response.ok) {
+          const data = await response.json()
+          accounts.value = Array.isArray(data) ? data : []
+        } else {
+          accounts.value = []
+        }
+      } catch (error) {
+        console.error('Error loading accounts:', error)
+        accounts.value = []
+      }
+    }
+
+    watch(() => props.isOpen, (newValue) => {
+      if (newValue) {
+        console.log('GoalForm modal is open, loading accounts...');
+        loadAccounts()
+      }
+    }, { immediate: true })
 
     const handleSubmit = () => {
       emit('submit', { ...form.value })
@@ -108,12 +148,14 @@ export default defineComponent({
         targetAmount: 0,
         currentAmount: 0,
         targetDate: '',
-        description: ''
+        description: '',
+        accountId: ''
       }
     }
 
     return {
       form,
+      accounts,
       handleSubmit
     }
   }
