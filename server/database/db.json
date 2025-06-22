@@ -29,12 +29,6 @@
       "nombre": "Inversiones",
       "tipo": "inversion",
       "saldo": 12000
-    },
-    {
-      "_id": "7",
-      "nombre": "Tarjeta de Débito",
-      "tipo": "debito",
-      "saldo": 2500
     }
   ],
   "transacciones": [
@@ -111,12 +105,48 @@
       "cuentaId": "1"
     },
     {
+      "_id": "86",
+      "descripcion": "Restaurante Junio",
+      "monto": 85,
+      "tipo": "gasto",
+      "categoria": "Alimentación",
+      "fecha": "2025-06-18",
+      "cuentaId": "1"
+    },
+    {
+      "_id": "87",
+      "descripcion": "Bonificación Junio",
+      "monto": 500,
+      "tipo": "ingreso",
+      "categoria": "Salario",
+      "fecha": "2025-06-17",
+      "cuentaId": "1"
+    },
+    {
+      "_id": "88",
+      "descripcion": "Café y Snacks Junio",
+      "monto": 45,
+      "tipo": "gasto",
+      "categoria": "Alimentación",
+      "fecha": "2025-06-16",
+      "cuentaId": "1"
+    },
+    {
       "_id": "6",
       "descripcion": "Salario Junio",
       "monto": 3800,
       "tipo": "ingreso",
       "categoria": "Salario",
       "fecha": "2025-06-15",
+      "cuentaId": "1"
+    },
+    {
+      "_id": "89",
+      "descripcion": "Consultoría IT Junio",
+      "monto": 1200,
+      "tipo": "ingreso",
+      "categoria": "Negocios",
+      "fecha": "2025-06-14",
       "cuentaId": "1"
     },
     {
@@ -129,11 +159,29 @@
       "cuentaId": "1"
     },
     {
+      "_id": "15",
+      "descripcion": "Freelance Diseño",
+      "monto": 900,
+      "tipo": "ingreso",
+      "categoria": "Negocios",
+      "fecha": "2025-06-12",
+      "cuentaId": "1"
+    },
+    {
       "_id": "34",
       "descripcion": "Gasolina Junio",
       "monto": 130,
       "tipo": "gasto",
       "categoria": "Transporte",
+      "fecha": "2025-06-08",
+      "cuentaId": "1"
+    },
+    {
+      "_id": "16",
+      "descripcion": "Freelance Marketing",
+      "monto": 1500,
+      "tipo": "ingreso",
+      "categoria": "Negocios",
       "fecha": "2025-06-08",
       "cuentaId": "1"
     },
@@ -264,15 +312,6 @@
       "cuentaId": "1"
     },
     {
-      "_id": "16",
-      "descripcion": "Freelance Marketing",
-      "monto": 1500,
-      "tipo": "ingreso",
-      "categoria": "Negocios",
-      "fecha": "2025-06-08",
-      "cuentaId": "1"
-    },
-    {
       "_id": "75",
       "descripcion": "Gimnasio Mayo",
       "monto": 80,
@@ -378,15 +417,6 @@
       "tipo": "gasto",
       "categoria": "Regalos",
       "fecha": "2024-04-15",
-      "cuentaId": "1"
-    },
-    {
-      "_id": "15",
-      "descripcion": "Freelance Diseño",
-      "monto": 900,
-      "tipo": "ingreso",
-      "categoria": "Negocios",
-      "fecha": "2025-06-12",
       "cuentaId": "1"
     },
     {
@@ -802,42 +832,6 @@
       "categoria": "Salud",
       "fecha": "2024-01-05",
       "cuentaId": "1"
-    },
-    {
-      "_id": "86",
-      "descripcion": "Restaurante Junio",
-      "monto": 85,
-      "tipo": "gasto",
-      "categoria": "Alimentación",
-      "fecha": "2025-06-18",
-      "cuentaId": "1"
-    },
-    {
-      "_id": "87",
-      "descripcion": "Bonificación Junio",
-      "monto": 500,
-      "tipo": "ingreso",
-      "categoria": "Salario",
-      "fecha": "2025-06-17",
-      "cuentaId": "1"
-    },
-    {
-      "_id": "88",
-      "descripcion": "Café y Snacks Junio",
-      "monto": 45,
-      "tipo": "gasto",
-      "categoria": "Alimentación",
-      "fecha": "2025-06-16",
-      "cuentaId": "1"
-    },
-    {
-      "_id": "89",
-      "descripcion": "Consultoría IT Junio",
-      "monto": 1200,
-      "tipo": "ingreso",
-      "categoria": "Negocios",
-      "fecha": "2025-06-14",
-      "cuentaId": "1"
     }
   ],
   "metas": [
@@ -928,7 +922,10 @@
       "valor_cuota": 470.5,
       "incluye_intereses": true,
       "forma_pago": "transferencia",
-      "cuenta_destino": "Cuenta Principal"
+      "cuenta_destino": "Cuenta Principal",
+      "garantia": "vehículo",
+      "estado": "activo",
+      "payments": []
     }
   ],
   "deudas": [
@@ -951,7 +948,9 @@
       "valor_cuota": 320.5,
       "incluye_intereses": true,
       "forma_pago": "débito automático",
-      "cuenta_origen": "Tarjeta de Débito"
+      "cuenta_origen": "Tarjeta de Débito",
+      "estado": "activa",
+      "payments": []
     }
   ]
 }

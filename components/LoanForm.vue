@@ -1,15 +1,23 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl">
-      <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-        {{ isLoan ? 'Nuevo Préstamo' : 'Nueva Deuda' }}
-      </h2>
-      <div class="mb-4 flex justify-end">
-        <button type="button" @click="setDefaultInformal" class="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">Default informal</button>
+  <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+          {{ isLoan ? 'Nuevo Préstamo' : 'Nueva Deuda' }}
+        </h2>
       </div>
-      <form @submit.prevent="handleSubmit" class="space-y-6">
-        <!-- 2. Datos del Préstamo o Deuda -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- Form Content (Scrollable) -->
+      <form @submit.prevent="handleSubmit" class="p-6 space-y-6 overflow-y-auto">
+        <div class="mb-4 flex justify-end">
+          <button type="button" @click="setDefaultInformal" class="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">Default informal</button>
+        </div>
+        
+        <!-- Field Groups -->
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white border-b pb-2">Datos del Préstamo</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Monto total prestado (capital)</label>
             <input v-model.number="form.monto" type="number" min="0.01" step="0.01" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
@@ -39,8 +47,8 @@
           </div>
         </div>
 
-        <!-- 3. Condiciones del Pago -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white border-b pb-2">Condiciones del Pago</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Plazo total</label>
             <input v-model="form.plazo_total" type="text" placeholder="Ej: 12 meses, 2 años" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
@@ -67,9 +75,9 @@
             <input v-model="form.fecha_ultimo_pago" type="date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
           </div>
         </div>
-
-        <!-- 4. Interés -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white border-b pb-2">Intereses</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tasa de interés (%)</label>
             <input v-model.number="form.tasa_interes" type="number" min="0" step="0.01" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
@@ -94,8 +102,8 @@
           </div>
         </div>
 
-        <!-- 5. Detalles de las Cuotas -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white border-b pb-2">Detalles de Cuotas</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Valor estimado de la cuota</label>
             <input v-model.number="form.valor_cuota" type="number" min="0" step="0.01" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
@@ -127,16 +135,17 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cuenta destino / datos de cobro</label>
             <select v-model="form.cuenta_destino" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-              <option v-for="cuenta in cuentas" :key="cuenta._id" :value="cuenta.nombre">{{ cuenta.nombre }}</option>
+              <option v-for="cuenta in cuentas" :key="cuenta._id" :value="cuenta.name">{{ cuenta.name }}</option>
             </select>
           </div>
         </div>
-
-        <div class="flex justify-end space-x-3 mt-6">
-          <button type="button" @click="$emit('close')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">Cancelar</button>
-          <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md">{{ isLoan ? 'Registrar Préstamo' : 'Registrar Deuda' }}</button>
-        </div>
       </form>
+
+      <!-- Modal Footer -->
+      <div class="flex justify-end space-x-3 p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+        <button type="button" @click="$emit('close')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">Cancelar</button>
+        <button @click="handleSubmit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md">{{ isLoan ? 'Registrar Préstamo' : 'Registrar Deuda' }}</button>
+      </div>
     </div>
   </div>
 </template>
@@ -176,19 +185,30 @@ export default defineComponent({
     })
     const amountError = ref(false)
 
-    onMounted(async () => {
+    const loadAccounts = async () => {
       try {
         const response = await fetch('http://localhost:3000/api/accounts')
         if (response.ok) {
-          cuentas.value = await response.json()
+          const data = await response.json()
+          cuentas.value = Array.isArray(data) ? data : []
           if (cuentas.value.length > 0) {
-            form.value.cuenta_destino = cuentas.value[0].nombre
+            form.value.cuenta_destino = cuentas.value[0].name
           }
+        } else {
+          cuentas.value = []
         }
       } catch (error) {
         console.error('Error loading accounts:', error)
+        cuentas.value = []
       }
-    })
+    }
+
+    watch(() => props.isOpen, (newValue) => {
+      if (newValue) {
+        console.log('Modal is open, loading accounts...');
+        loadAccounts()
+      }
+    }, { immediate: true })
 
     watch(() => form.value.monto, (val) => {
       amountError.value = val <= 0
@@ -199,7 +219,10 @@ export default defineComponent({
         amountError.value = true
         return
       }
+      // Emit submit before resetting form to ensure the modal closes with data
       emit('submit', { ...form.value })
+      
+      // Reset form
       form.value = {
         nombre: '',
         monto: 0,
@@ -219,7 +242,7 @@ export default defineComponent({
         incluye_intereses: true,
         permite_adelantos: false,
         forma_pago: 'efectivo',
-        cuenta_destino: cuentas.value.length > 0 ? cuentas.value[0].nombre : ''
+        cuenta_destino: cuentas.value.length > 0 ? cuentas.value[0].name : ''
       }
     }
 

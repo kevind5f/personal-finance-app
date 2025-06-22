@@ -138,8 +138,8 @@
                   <p class="text-gray-500 dark:text-gray-400">No tienes deudas registradas</p>
                 </div>
                 <div v-else class="space-y-4">
-                  <div v-for="deuda in deudas" :key="deuda._id" class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700 pb-2">
-                    <div>
+                  <div v-for="deuda in deudas" :key="deuda._id" @click="openDetailModal(deuda, 'deuda')" class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700 pb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors duration-200">
+                    <div class="flex-grow">
                       <h3 class="font-medium text-gray-900 dark:text-white">{{ deuda.nombre }}</h3>
                       <p class="text-gray-600 dark:text-gray-400">{{ deuda.motivo }}</p>
                       <p class="text-xs text-gray-400 dark:text-gray-500">Adquirida: {{ formatDate(deuda.fecha_adquisicion) }} | Cuotas: {{ deuda.numero_cuotas }} | Tasa: {{ deuda.tasa_interes }}%</p>
@@ -160,8 +160,8 @@
                   <p class="text-gray-500 dark:text-gray-400">No tienes préstamos registrados</p>
                 </div>
                 <div v-else class="space-y-4">
-                  <div v-for="prestamo in prestamos" :key="prestamo._id" class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700 pb-2">
-                    <div>
+                  <div v-for="prestamo in prestamos" :key="prestamo._id" @click="openDetailModal(prestamo, 'prestamo')" class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700 pb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors duration-200">
+                    <div class="flex-grow">
                       <h3 class="font-medium text-gray-900 dark:text-white">{{ prestamo.nombre }}</h3>
                       <p class="text-gray-600 dark:text-gray-400">{{ prestamo.motivo }}</p>
                       <p class="text-xs text-gray-400 dark:text-gray-500">Otorgado: {{ formatDate(prestamo.fecha_otorgamiento) }} | Cuotas: {{ prestamo.numero_cuotas }} | Tasa: {{ prestamo.tasa_interes }}%</p>
@@ -299,6 +299,15 @@
         :account="selectedAccount"
         @close="closeAccountOperationsModal"
       />
+
+      <DebtLoanDetailModal
+        v-if="showDetailModal"
+        :is-open="showDetailModal"
+        :item="selectedItem"
+        :item-type="selectedItemType"
+        @close="closeDetailModal"
+        @submit-payment="handlePayment"
+      />
     </ClientOnly>
     </div>
 </template>
@@ -312,6 +321,7 @@ import BudgetForm from '~/components/BudgetForm.vue'
 import ReportModal from '~/components/ReportModal.vue'
 import AccountForm from '~/components/AccountForm.vue'
 import AccountOperationsModal from '~/components/AccountOperationsModal.vue'
+import DebtLoanDetailModal from '~/components/DebtLoanDetailModal.vue'
 
 // Estado de los modales
 const showTransactionModal = ref(false)
@@ -349,6 +359,11 @@ const prestamos = ref([])
 
 // Presupuesto mensual estimado
 const monthlyBudget = ref(5000)
+
+// NUEVO: Estado para el modal de detalles de deuda/préstamo
+const showDetailModal = ref(false)
+const selectedItem = ref(null)
+const selectedItemType = ref('') // 'deuda' or 'prestamo'
 
 // Computed property para transacciones seguras
 const safeTransactions = computed(() => {
@@ -704,5 +719,33 @@ const formatDate = (dateString) => {
     month: '2-digit',
     year: 'numeric'
   })
+}
+
+// NUEVO: Funciones para el modal de detalles
+const openDetailModal = (item, type) => {
+  selectedItem.value = item
+  selectedItemType.value = type
+  showDetailModal.value = true
+}
+
+const closeDetailModal = () => {
+  showDetailModal.value = false
+  selectedItem.value = null
+  selectedItemType.value = ''
+}
+
+const handlePayment = (payment) => {
+  const list = selectedItemType.value === 'deuda' ? deudas.value : prestamos.value
+  const item = list.find(i => i._id === payment.itemId)
+  if (item) {
+    if (!item.payments) {
+      item.payments = []
+    }
+    // Agregamos el pago al principio del array para que aparezca primero
+    item.payments.unshift({ amount: payment.amount, date: payment.date })
+  }
+  // En una aplicación real, aquí llamarías a un endpoint para guardar el pago:
+  // await fetch(`/api/${selectedItemType.value}s/${payment.itemId}/payments`, { ... })
+  console.log('Pago registrado (solo en frontend):', payment)
 }
 </script> 
