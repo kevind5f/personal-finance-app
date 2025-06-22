@@ -1,0 +1,622 @@
+<template>
+  <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="mb-8 flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Configuración</h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-400">Gestiona tus cuentas, categorías y reportes</p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <button @click="navigateTo('/dashboard')" class="btn-secondary flex items-center">
+            <span class="mr-2">←</span>
+            Volver al Dashboard
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex justify-center items-center py-8">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-8" role="alert">
+        <strong class="font-bold">Error!</strong>
+        <span class="block sm:inline">{{ error }}</span>
+      </div>
+
+      <!-- Contenido Principal -->
+      <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Gestión de Cuentas -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Gestión de Cuentas</h2>
+          </div>
+          <div class="p-6 space-y-4">
+            <div v-if="accounts.length === 0" class="text-center py-8">
+              <p class="text-gray-500 dark:text-gray-400">No hay cuentas configuradas</p>
+              <button @click="openAccountModal" class="btn-primary mt-4">
+                Crear Primera Cuenta
+              </button>
+            </div>
+            <div v-else v-for="account in accounts" :key="account._id" class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div>
+                <p class="font-medium dark:text-white">{{ account.name }}</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ account.type }}</p>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="text-lg font-semibold" :class="account.balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                  ${{ formatAmount(account.balance) }}
+                </span>
+                <button 
+                  @click="deleteAccount(account)" 
+                  class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  title="Eliminar cuenta"
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+            <button @click="openAccountModal" class="btn-primary w-full">
+              Añadir Nueva Cuenta
+            </button>
+          </div>
+        </div>
+
+        <!-- Gestión de Categorías de Gastos -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Categorías de Gastos</h2>
+          </div>
+          <div class="p-6 space-y-4">
+            <div v-for="category in expenseCategories" :key="category.id" class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div class="mb-2 flex justify-between items-center">
+                <h3 class="font-semibold text-gray-900 dark:text-white text-lg">{{ category.name }}</h3>
+                <div class="flex items-center space-x-2">
+                  <button @click="addSubcategory(category)" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-sm">
+                    + Subcategoría
+                  </button>
+                  <button @click="deleteCategory('expense', category)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm">
+                    🗑️
+                </button>
+                </div>
+              </div>
+              <div v-if="category.subcategories?.length" class="space-y-2">
+                <div v-for="sub in category.subcategories" :key="sub.id" class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 pl-2 group">
+                  <div class="flex items-center">
+                    <span class="w-2 h-2 bg-gray-400 rounded-full mr-3"></span>
+                    <span v-if="!sub.isEditing">{{ sub.name }}</span>
+                    <input 
+                      v-else
+                      v-model="sub.editName"
+                      @keyup.enter="saveSubcategory(category, sub)"
+                      @keyup.esc="cancelEditSubcategory(sub)"
+                      class="bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded px-2 py-1 text-sm w-32"
+                      ref="editInput"
+                    />
+                  </div>
+                  <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      v-if="!sub.isEditing"
+                      @click="editSubcategory(sub)" 
+                      class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-xs"
+                    >
+                      ✎
+                    </button>
+                    <button 
+                      v-if="!sub.isEditing"
+                      @click="deleteSubcategory(category, sub)" 
+                      class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-xs"
+                    >
+                      🗑️
+                    </button>
+                    <button 
+                      v-if="sub.isEditing"
+                      @click="saveSubcategory(category, sub)" 
+                      class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-xs"
+                    >
+                      ✓
+                    </button>
+                    <button 
+                      v-if="sub.isEditing"
+                      @click="cancelEditSubcategory(sub)" 
+                      class="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 text-xs"
+                    >
+                      ✗
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="text-sm text-gray-500 dark:text-gray-400 italic">
+                Sin subcategorías
+              </div>
+            </div>
+            <button @click="openCategoryModal('expense')" class="btn-primary w-full">
+              Nueva Categoría de Gasto
+            </button>
+          </div>
+        </div>
+
+        <!-- Gestión de Categorías de Ingresos -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Categorías de Ingresos</h2>
+          </div>
+          <div class="p-6 space-y-4">
+            <div v-for="category in incomeCategories" :key="category.id" class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div class="mb-2 flex justify-between items-center">
+                <h3 class="font-semibold text-gray-900 dark:text-white text-lg">{{ category.name }}</h3>
+                <div class="flex items-center space-x-2">
+                  <button @click="addSubcategory(category)" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-sm">
+                    + Subcategoría
+                  </button>
+                  <button @click="deleteCategory('income', category)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm">
+                    🗑️
+                </button>
+                </div>
+              </div>
+              <div v-if="category.subcategories?.length" class="space-y-2">
+                <div v-for="sub in category.subcategories" :key="sub.id" class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 pl-2 group">
+                  <div class="flex items-center">
+                    <span class="w-2 h-2 bg-gray-400 rounded-full mr-3"></span>
+                    <span v-if="!sub.isEditing">{{ sub.name }}</span>
+                    <input 
+                      v-else
+                      v-model="sub.editName"
+                      @keyup.enter="saveSubcategory(category, sub)"
+                      @keyup.esc="cancelEditSubcategory(sub)"
+                      class="bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded px-2 py-1 text-sm w-32"
+                      ref="editInput"
+                    />
+                  </div>
+                  <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      v-if="!sub.isEditing"
+                      @click="editSubcategory(sub)" 
+                      class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-xs"
+                    >
+                      ✎
+                    </button>
+                    <button 
+                      v-if="!sub.isEditing"
+                      @click="deleteSubcategory(category, sub)" 
+                      class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-xs"
+                    >
+                      🗑️
+                    </button>
+                    <button 
+                      v-if="sub.isEditing"
+                      @click="saveSubcategory(category, sub)" 
+                      class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-xs"
+                    >
+                      ✓
+                    </button>
+                    <button 
+                      v-if="sub.isEditing"
+                      @click="cancelEditSubcategory(sub)" 
+                      class="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 text-xs"
+                    >
+                      ✗
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="text-sm text-gray-500 dark:text-gray-400 italic">
+                Sin subcategorías
+              </div>
+            </div>
+            <button @click="openCategoryModal('income')" class="btn-primary w-full">
+              Nueva Categoría de Ingreso
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Cuenta -->
+    <ClientOnly>
+      <AccountForm
+        v-if="showAccountModal"
+        :is-open="showAccountModal"
+        @close="closeAccountModal"
+        @submit="handleAccountSubmit"
+      />
+    </ClientOnly>
+
+    <!-- Modal de Subcategoría -->
+    <ClientOnly>
+      <SubcategoryModal
+        v-if="showSubcategoryModal"
+        :is-open="showSubcategoryModal"
+        :category-name="selectedCategory?.name || ''"
+        @close="closeSubcategoryModal"
+        @submit="handleSubcategorySubmit"
+      />
+    </ClientOnly>
+
+    <!-- Modal de Categoría -->
+    <ClientOnly>
+      <CategoryModal
+        v-if="showCategoryModal"
+        :is-open="showCategoryModal"
+        :category-type="categoryType"
+        @close="closeCategoryModal"
+        @submit="handleCategorySubmit"
+    />
+    </ClientOnly>
+  </div>
+</template>
+
+<script setup>
+import ReportModal from '~/components/ReportModal.vue'
+import AccountForm from '~/components/AccountForm.vue'
+import SubcategoryModal from '~/components/SubcategoryModal.vue'
+import CategoryModal from '~/components/CategoryModal.vue'
+
+// Estado de carga y error
+const isLoading = ref(true)
+const error = ref(null)
+
+// Estado para las cuentas (cargadas desde API)
+const accounts = ref([])
+
+// Función de utilidad para formatear montos
+const formatAmount = (amount) => {
+  if (amount === undefined || amount === null) return '0.00'
+  const num = Number(amount)
+  return isNaN(num) ? '0.00' : num.toFixed(2)
+}
+
+// Función para cargar las cuentas desde la API
+const loadAccounts = async () => {
+  try {
+    isLoading.value = true
+    error.value = null
+
+    // Cargar cuentas
+    const accountsResponse = await fetch('http://localhost:3000/api/accounts')
+    const accountsData = await accountsResponse.json()
+    
+    // Cargar transacciones para contar por cuenta
+    const transactionsResponse = await fetch('http://localhost:3000/api/transactions')
+    const transactionsData = await transactionsResponse.json()
+    
+    // Agregar conteo de transacciones a cada cuenta
+    const accountsWithTransactionCount = Array.isArray(accountsData) ? accountsData.map(account => {
+      const transactionCount = Array.isArray(transactionsData) 
+        ? transactionsData.filter(t => t.accountId === account._id).length 
+        : 0
+      return {
+        ...account,
+        transactionCount
+      }
+    }) : []
+    
+    accounts.value = accountsWithTransactionCount
+  } catch (err) {
+    console.error('Error loading accounts:', err)
+    error.value = err.message || 'Error al cargar las cuentas'
+    accounts.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Estado del modal de cuentas
+const showAccountModal = ref(false)
+
+// Estado del modal de subcategorías
+const showSubcategoryModal = ref(false)
+const selectedCategory = ref(null)
+
+// Estado del modal de categorías
+const showCategoryModal = ref(false)
+const categoryType = ref('expense')
+
+// Estado para las categorías (mantenidas como antes)
+const expenseCategories = ref([
+  { 
+    id: 1, 
+    name: 'Alimentación',
+    subcategories: [
+      { id: 1, name: 'Supermercado' },
+      { id: 2, name: 'Restaurantes' },
+      { id: 3, name: 'Delivery' },
+      { id: 4, name: 'Café y Snacks' }
+    ]
+  },
+  { 
+    id: 2, 
+    name: 'Transporte',
+    subcategories: [
+      { id: 3, name: 'Gasolina' },
+      { id: 4, name: 'Mantenimiento' },
+      { id: 5, name: 'Estacionamiento' },
+      { id: 6, name: 'Transporte Público' }
+    ]
+  },
+  {
+    id: 3,
+    name: 'Entretenimiento',
+    subcategories: [
+      { id: 7, name: 'Cine y Teatro' },
+      { id: 8, name: 'Videojuegos' },
+      { id: 9, name: 'Deportes' },
+      { id: 10, name: 'Hobbies' }
+    ]
+  },
+  {
+    id: 4,
+    name: 'Servicios',
+    subcategories: [
+      { id: 11, name: 'Electricidad' },
+      { id: 12, name: 'Agua' },
+      { id: 13, name: 'Internet' },
+      { id: 14, name: 'Telefonía' }
+    ]
+  }
+])
+
+const incomeCategories = ref([
+  { 
+    id: 1, 
+    name: 'Salario',
+    subcategories: [
+      { id: 1, name: 'Salario Base' },
+      { id: 2, name: 'Bonificaciones' },
+      { id: 3, name: 'Horas Extras' },
+      { id: 4, name: 'Comisiones' }
+    ]
+  },
+  { 
+    id: 2, 
+    name: 'Inversiones',
+    subcategories: [
+      { id: 5, name: 'Dividendos' },
+      { id: 6, name: 'Intereses' },
+      { id: 7, name: 'Ganancias de Capital' },
+      { id: 8, name: 'Rendimientos' }
+    ]
+  },
+  {
+    id: 3,
+    name: 'Negocios',
+    subcategories: [
+      { id: 9, name: 'Ventas' },
+      { id: 10, name: 'Consultoría' },
+      { id: 11, name: 'Freelance' },
+      { id: 12, name: 'Alquileres' }
+    ]
+  },
+  {
+    id: 4,
+    name: 'Otros Ingresos',
+    subcategories: [
+      { id: 13, name: 'Regalos' },
+      { id: 14, name: 'Reembolsos' },
+      { id: 15, name: 'Premios' },
+      { id: 16, name: 'Ventas Personales' }
+    ]
+  }
+])
+
+// Estado del modal de reportes
+const showReportModal = ref(false)
+
+// Funciones para manejar las cuentas
+const openAccountModal = () => {
+  showAccountModal.value = true
+}
+
+const closeAccountModal = () => {
+  showAccountModal.value = false
+}
+
+const handleAccountSubmit = async (accountData) => {
+  try {
+    const response = await fetch('http://localhost:3000/api/accounts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: accountData.name,
+        type: accountData.type,
+        balance: accountData.balance
+      })
+    })
+
+    if (response.ok) {
+      const newAccount = await response.json()
+      accounts.value.push(newAccount)
+      closeAccountModal()
+    }
+  } catch (error) {
+    console.error('Error creating account:', error)
+  }
+}
+
+const deleteAccount = async (account) => {
+  // Verificar si la cuenta tiene transacciones asociadas
+  const hasTransactions = account.transactionCount > 0
+  
+  let confirmMessage = `¿Estás seguro de que quieres eliminar la cuenta "${account.name}"?`
+  if (hasTransactions) {
+    confirmMessage += `\n\n⚠️ Esta cuenta tiene ${account.transactionCount} transacciones asociadas. Eliminarla también eliminará todas las transacciones relacionadas.`
+  }
+  
+  if (confirm(confirmMessage)) {
+    try {
+      // Primero eliminar las transacciones asociadas si las hay
+      if (hasTransactions) {
+        const transactionsResponse = await fetch(`http://localhost:3000/api/transactions?accountId=${account._id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        
+        if (!transactionsResponse.ok) {
+          console.error('Error al eliminar transacciones asociadas')
+        }
+      }
+      
+      // Luego eliminar la cuenta
+      const response = await fetch(`http://localhost:3000/api/accounts?id=${account._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (response.ok) {
+        // Remover la cuenta de la lista local
+        const index = accounts.value.findIndex(a => a._id === account._id)
+        if (index > -1) {
+          accounts.value.splice(index, 1)
+        }
+        
+        // Mostrar mensaje de éxito
+        const successMessage = hasTransactions 
+          ? `Cuenta "${account.name}" eliminada exitosamente junto con ${account.transactionCount} transacciones asociadas.`
+          : `Cuenta "${account.name}" eliminada exitosamente.`
+        
+        alert(successMessage)
+        console.log('Cuenta eliminada exitosamente')
+      } else {
+        console.error('Error al eliminar la cuenta')
+        alert('Error al eliminar la cuenta. Inténtalo de nuevo.')
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error)
+      alert('Error al eliminar la cuenta. Inténtalo de nuevo.')
+    }
+  }
+}
+
+const editAccount = (account) => {
+  // Implementar lógica para editar cuenta
+  console.log('Editar cuenta:', account)
+}
+
+const openCategoryModal = (type) => {
+  categoryType.value = type
+  showCategoryModal.value = true
+}
+
+const editCategory = (category) => {
+  // Implementar lógica para editar categoría
+  console.log('Editar categoría:', category)
+}
+
+// Funciones para manejar subcategorías
+const addSubcategory = (category) => {
+  selectedCategory.value = category
+  showSubcategoryModal.value = true
+}
+
+const closeSubcategoryModal = () => {
+  showSubcategoryModal.value = false
+  selectedCategory.value = null
+}
+
+const handleSubcategorySubmit = (subcategoryName) => {
+  if (selectedCategory.value) {
+    const newId = Math.max(...selectedCategory.value.subcategories.map(sub => sub.id), 0) + 1
+    const newSubcategory = {
+      id: newId,
+      name: subcategoryName
+    }
+    selectedCategory.value.subcategories.push(newSubcategory)
+    closeSubcategoryModal()
+  }
+}
+
+const editSubcategory = (subcategory) => {
+  subcategory.isEditing = true
+  subcategory.editName = subcategory.name
+  
+  // Enfocar el input después de que se renderice
+  nextTick(() => {
+    const inputs = document.querySelectorAll('input[ref="editInput"]')
+    const input = Array.from(inputs).find(input => input.value === subcategory.editName)
+    if (input) {
+      input.focus()
+      input.select()
+    }
+  })
+}
+
+const saveSubcategory = (category, subcategory) => {
+  if (subcategory.editName && subcategory.editName.trim()) {
+    subcategory.name = subcategory.editName.trim()
+    subcategory.isEditing = false
+    delete subcategory.editName
+  }
+}
+
+const cancelEditSubcategory = (subcategory) => {
+  subcategory.isEditing = false
+  delete subcategory.editName
+}
+
+const deleteSubcategory = (category, subcategory) => {
+  if (confirm(`¿Estás seguro de que quieres eliminar la subcategoría "${subcategory.name}"?`)) {
+    const index = category.subcategories.findIndex(sub => sub.id === subcategory.id)
+    if (index > -1) {
+      category.subcategories.splice(index, 1)
+    }
+  }
+}
+
+// Funciones para manejar categorías
+const handleCategorySubmit = (categoryData) => {
+  if (categoryType.value === 'expense') {
+    expenseCategories.value.push(categoryData)
+  } else {
+    incomeCategories.value.push(categoryData)
+  }
+  closeCategoryModal()
+}
+
+const closeCategoryModal = () => {
+  showCategoryModal.value = false
+}
+
+const deleteCategory = (type, category) => {
+  const categoryType = type === 'expense' ? 'Gasto' : 'Ingreso'
+  if (confirm(`¿Estás seguro de que quieres eliminar la categoría "${category.name}" y todas sus subcategorías?`)) {
+    if (type === 'expense') {
+      const index = expenseCategories.value.findIndex(cat => cat.id === category.id)
+      if (index > -1) {
+        expenseCategories.value.splice(index, 1)
+      }
+    } else {
+      const index = incomeCategories.value.findIndex(cat => cat.id === category.id)
+      if (index > -1) {
+        incomeCategories.value.splice(index, 1)
+      }
+    }
+  }
+}
+
+// Funciones para el modal de reportes
+const openReportModal = () => {
+  showReportModal.value = true
+}
+
+const closeReportModal = () => {
+  showReportModal.value = false
+}
+
+const handleReportGenerate = (reportConfig) => {
+  console.log('Generando reporte con configuración:', reportConfig)
+  closeReportModal()
+}
+
+// Cargar datos al montar el componente
+onMounted(async () => {
+  await loadAccounts()
+})
+</script> 

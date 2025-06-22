@@ -1,0 +1,92 @@
+@use 'tailwindcss/base';
+@use 'tailwindcss/components';
+@use 'tailwindcss/utilities';
+
+@layer base {
+  body {
+    background-color: theme('colors.gray.50');
+    color: theme('colors.gray.900');
+  }
+}
+
+@layer components {
+  .btn {
+    padding: theme('spacing.4') theme('spacing.2');
+    border-radius: theme('borderRadius.md');
+    font-weight: theme('fontWeight.medium');
+    
+    &-primary {
+      background-color: theme('colors.indigo.600');
+      color: theme('colors.white');
+      &:hover {
+        background-color: theme('colors.indigo.700');
+      }
+    }
+    
+    &-secondary {
+      background-color: theme('colors.gray.200');
+      color: theme('colors.gray.700');
+      &:hover {
+        background-color: theme('colors.gray.300');
+      }
+    }
+  }
+
+  .input {
+    width: 100%;
+    padding: theme('spacing.3') theme('spacing.2');
+    border: 1px solid theme('colors.gray.300');
+    border-radius: theme('borderRadius.md');
+    &:focus {
+      outline: none;
+      border-color: theme('colors.indigo.500');
+      box-shadow: 0 0 0 2px theme('colors.indigo.500');
+    }
+  }
+
+  .card {
+    background-color: theme('colors.white');
+    border-radius: theme('borderRadius.lg');
+    box-shadow: theme('boxShadow.md');
+    padding: theme('spacing.6');
+  }
+
+  .form-input {
+    margin-top: theme('spacing.1');
+    display: block;
+    width: 100%;
+    border-radius: theme('borderRadius.md');
+    border: 1px solid theme('colors.gray.300');
+    box-shadow: theme('boxShadow.sm');
+    &:focus {
+      border-color: theme('colors.indigo.500');
+      box-shadow: 0 0 0 2px theme('colors.indigo.500');
+    }
+  }
+
+  .form-label {
+    display: block;
+    font-size: theme('fontSize.sm');
+    font-weight: theme('fontWeight.medium');
+    color: theme('colors.gray.700');
+  }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    padding: theme('spacing.1') theme('spacing.1');
+    font-size: theme('fontSize.sm');
+    font-weight: theme('fontWeight.medium');
+    color: theme('colors.gray.500');
+    &:hover {
+      color: theme('colors.gray.700');
+      border-color: theme('colors.gray.300');
+    }
+  }
+
+  .nav-link.router-link-active {
+    border-bottom-width: 2px;
+    border-color: theme('colors.indigo.500');
+    color: theme('colors.gray.900');
+  }
+} 

@@ -1,0 +1,33 @@
+{
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "stylelint.validate": [
+    "css",
+    "scss",
+    "vue"
+  ],
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "tailwindCSS.includeLanguages": {
+    "vue": "html",
+    "vue-html": "html",
+    "css": "css",
+    "scss": "scss"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.fixAll.stylelint": "explicit"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss",
+    "*.scss": "scss"
+  },
+  "css.customData": [".vscode/css-data.json"],
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "scss.lint.validProperties": [
+    "apply"
+  ]
+} 
