@@ -858,6 +858,12 @@
       "montoActual": 18000,
       "fechaObjetivo": "2026-12-31",
       "descripcion": "Ahorro para entrada de casa"
+    },
+    {
+      "_id": "4",
+      "nombre": "Nueva meta",
+      "montoObjetivo": 500000,
+      "montoActual": 500
     }
   ],
   "presupuestos": [
@@ -900,6 +906,26 @@
       "gastado": 150,
       "mes": "2025-06",
       "descripcion": "Presupuesto mensual para vestimenta"
+    },
+    {
+      "_id": "6",
+      "gastado": 0
+    },
+    {
+      "_id": "7",
+      "gastado": 0
+    },
+    {
+      "_id": "8",
+      "gastado": 0
+    },
+    {
+      "_id": "9",
+      "categoria": "transport",
+      "monto": 5000,
+      "gastado": 0,
+      "mes": "2025-06",
+      "descripcion": "2121"
     }
   ],
   "prestamos": [

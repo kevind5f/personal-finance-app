@@ -122,13 +122,11 @@
 
 <script setup>
 const props = defineProps({
-  isOpen: {
-    type: Boolean,
-    default: false
-  },
-  account: {
-    type: Object,
-    default: null
+  isOpen: Boolean,
+  account: Object,
+  allTransactions: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -159,10 +157,13 @@ const formatDate = (dateString) => {
 
 // Filtrar transacciones
 const filteredTransactions = computed(() => {
-  if (filterType.value === 'all') {
-    return transactions.value
+  let txs = props.allTransactions.filter(
+    t => t.accountId === props.account?._id
+  )
+  if (filterType.value !== 'all') {
+    txs = txs.filter(t => t.type === filterType.value)
   }
-  return transactions.value.filter(transaction => transaction.type === filterType.value)
+  return txs.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)
 })
 
 // Cargar transacciones de la cuenta

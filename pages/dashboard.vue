@@ -180,38 +180,63 @@
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-4">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">Metas de Ahorro</h3>
-                <div v-if="savingsGoals.length === 0" class="text-center py-4">
-                  <p class="text-gray-500 dark:text-gray-400">No hay metas de ahorro configuradas</p>
+                <div class="flex justify-end mb-2">
+                  <button @click="openGoalModal" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm">
+                    Nueva Meta
+                  </button>
                 </div>
-                <div v-else class="space-y-2">
+                <div v-if="Array.isArray(savingsGoals) && savingsGoals.length > 0" class="space-y-4">
                   <div v-for="goal in savingsGoals" :key="goal._id" class="space-y-2">
                     <div class="flex justify-between items-center">
-                      <span class="text-gray-600 dark:text-gray-400">{{ goal.name }}</span>
-                      <span class="text-green-600 dark:text-green-400">${{ formatAmount(goal.currentAmount) }} / ${{ formatAmount(goal.targetAmount) }}</span>
+                      <h3 class="font-medium text-gray-900 dark:text-white">{{ goal.name || goal.nombre }}</h3>
+                      <span class="text-sm text-gray-600 dark:text-gray-400">{{ goal.targetDate || goal.fechaObjetivo }}</span>
                     </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div class="bg-green-600 h-2 rounded-full" :style="`width: ${Math.min((goal.currentAmount / goal.targetAmount) * 100, 100)}%`"></div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                      <div
+                        class="bg-green-600 h-2.5 rounded-full"
+                        :style="{ width: `${Math.min(((goal.currentAmount || goal.montoActual) / (goal.targetAmount || goal.montoObjetivo)) * 100, 100)}%` }"
+                      ></div>
                     </div>
+                    <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                      <span>${{ formatAmount(goal.currentAmount || goal.montoActual) }}</span>
+                      <span>${{ formatAmount(goal.targetAmount || goal.montoObjetivo) }}</span>
                     </div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ goal.description || goal.descripcion }}</div>
+                  </div>
                 </div>
-                <button @click="openGoalModal" class="btn-secondary w-full">
-                    Establecer Nueva Meta
-                </button>
+                <div v-else class="text-center text-gray-500 dark:text-gray-400 py-4">
+                  No hay metas de ahorro configuradas.
+                </div>
                 </div>
                 <div class="space-y-4">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Presupuesto Mensual</h3>
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center">
-                    <span class="text-gray-600 dark:text-gray-400">Gastos Totales</span>
-                    <span class="text-red-600 dark:text-red-400">${{ formatAmount(dashboardSummary.monthly_expenses) }} / ${{ formatAmount(monthlyBudget) }}</span>
-                    </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                    <div class="bg-red-600 h-2 rounded-full" :style="`width: ${Math.min((dashboardSummary.monthly_expenses / monthlyBudget) * 100, 100)}%`"></div>
-                    </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Presupuestos</h3>
+                <div class="flex justify-end mb-2">
+                  <button @click="openBudgetModal" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md text-sm">
+                    Nuevo Presupuesto
+                  </button>
                 </div>
-                <button @click="openBudgetModal" class="btn-secondary w-full">
-                    Crear Presupuesto
-                </button>
+                <div v-if="Array.isArray(budgets) && budgets.length > 0" class="space-y-4">
+                  <div v-for="budget in budgets" :key="budget._id" class="space-y-2">
+                    <div class="flex justify-between items-center">
+                      <h3 class="font-medium text-gray-900 dark:text-white">{{ budget.category }}</h3>
+                      <span class="text-sm text-gray-600 dark:text-gray-400">{{ budget.month }}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                      <div
+                        class="bg-yellow-600 h-2.5 rounded-full"
+                        :style="{ width: `${(budget.spentAmount / budget.totalBudget * 100)}%` }"
+                      ></div>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                      <span>${{ formatAmount(budget.spentAmount) }}</span>
+                      <span>${{ formatAmount(budget.totalBudget) }}</span>
+                    </div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ budget.description }}</div>
+                  </div>
+                </div>
+                <div v-else class="text-center text-gray-500 dark:text-gray-400 py-4">
+                  No hay presupuestos registrados.
+                </div>
                 </div>
             </div>
             </div>
@@ -297,6 +322,7 @@
         v-if="showAccountOperationsModal"
         :is-open="showAccountOperationsModal"
         :account="selectedAccount"
+        :all-transactions="transactions"
         @close="closeAccountOperationsModal"
       />
 
@@ -352,6 +378,7 @@ const accounts = ref([])
 const transactions = ref([])
 const savingsGoals = ref([])
 const budget = ref(null)
+const budgets = ref([])
 
 // NUEVO: Estado para deudas y préstamos
 const deudas = ref([])
@@ -381,6 +408,7 @@ const loadDashboardData = async () => {
     transactions.value = []
     savingsGoals.value = []
     budget.value = null
+    budgets.value = []
     deudas.value = []
     prestamos.value = []
 
@@ -423,6 +451,7 @@ const loadDashboardData = async () => {
     const budgetResponse = await fetch('http://localhost:3000/api/budgets')
     const budgetData = await budgetResponse.json()
     budget.value = budgetData || null
+    budgets.value = Array.isArray(budgetData) ? budgetData : []
 
     // Calcular presupuesto mensual total
     if (Array.isArray(budgetData)) {
@@ -448,6 +477,7 @@ const loadDashboardData = async () => {
     transactions.value = []
     savingsGoals.value = []
     budget.value = null
+    budgets.value = []
     deudas.value = []
     prestamos.value = []
   } finally {
@@ -590,14 +620,16 @@ const handleBudgetSubmit = async (budgetData) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        totalBudget: budgetData.totalBudget,
-        spentAmount: budgetData.spentAmount || 0
+        category: budgetData.category,
+        totalBudget: budgetData.amount,
+        spentAmount: 0,
+        month: budgetData.month,
+        description: budgetData.description
       })
     })
 
     if (response.ok) {
-      const newBudget = await response.json()
-      budget.value = newBudget
+      await loadDashboardData() // Recargar todos los datos, incluyendo presupuestos
       closeBudgetModal()
     }
   } catch (error) {
@@ -671,6 +703,7 @@ onBeforeUnmount(() => {
   transactions.value = []
   savingsGoals.value = []
   budget.value = null
+  budgets.value = []
   deudas.value = []
   prestamos.value = []
 })
