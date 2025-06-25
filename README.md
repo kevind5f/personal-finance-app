@@ -1,75 +1,159 @@
-# Nuxt Minimal Starter
+# Personal Finance App
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Una aplicación de finanzas personales construida con Nuxt 3, Vue 3 y TypeScript.
 
-## Setup
+## 🚀 Preparación para Producción
 
-Make sure to install dependencies:
+### 1. Configuración de Variables de Entorno
+
+Crea un archivo `.env` en la raíz del proyecto:
 
 ```bash
-# npm
-npm install
+# Variables de entorno para producción
+NODE_ENV=production
+JWT_SECRET=tu-clave-secreta-super-segura-aqui
+API_BASE=https://tu-dominio.com
+PORT=3000
 
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
+# Configuración de base de datos (para futuras migraciones)
+DATABASE_URL=mongodb://localhost:27017/personal-finance
 ```
 
-## Development Server
+### 2. Scripts de Producción
 
-Start the development server on `http://localhost:3000`:
+El proyecto incluye los siguientes scripts:
 
 ```bash
-# npm
+# Desarrollo
 npm run dev
 
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
+# Construcción para producción
 npm run build
 
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
+# Vista previa de producción
 npm run preview
 
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+# Generación estática (SSG)
+npm run generate
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+### 3. Despliegue
+
+#### Opción A: Despliegue en Vercel (Recomendado)
+
+1. Instala Vercel CLI:
+```bash
+npm i -g vercel
+```
+
+2. Despliega:
+```bash
+vercel --prod
+```
+
+#### Opción B: Despliegue en Netlify
+
+1. Construye el proyecto:
+```bash
+npm run build
+```
+
+2. Sube la carpeta `.output` a Netlify
+
+#### Opción C: Despliegue en servidor propio
+
+1. Construye el proyecto:
+```bash
+npm run build
+```
+
+2. Inicia el servidor:
+```bash
+node .output/server/index.mjs
+```
+
+### 4. Configuración de Base de Datos
+
+**⚠️ IMPORTANTE**: Actualmente el proyecto usa JSON como base de datos. Para producción, se recomienda migrar a una base de datos real como MongoDB o PostgreSQL.
+
+#### Migración a MongoDB (Recomendado)
+
+1. Instala MongoDB:
+```bash
+npm install mongodb
+```
+
+2. Actualiza las variables de entorno:
+```bash
+DATABASE_URL=mongodb://localhost:27017/personal-finance
+```
+
+3. Crea un servicio de base de datos MongoDB (ver `server/database/mongodb.ts`)
+
+### 5. Seguridad
+
+- [ ] Cambia `JWT_SECRET` por una clave segura
+- [ ] Configura HTTPS en producción
+- [ ] Implementa rate limiting
+- [ ] Configura CORS apropiadamente
+- [ ] Valida todas las entradas de usuario
+
+### 6. Monitoreo y Logs
+
+- [ ] Configura logging (Winston o similar)
+- [ ] Implementa monitoreo de errores (Sentry)
+- [ ] Configura métricas de rendimiento
+
+### 7. Backup y Recuperación
+
+- [ ] Configura backups automáticos de la base de datos
+- [ ] Implementa estrategia de recuperación de desastres
+
+## 🛠️ Desarrollo
+
+### Instalación
+
+```bash
+npm install
+```
+
+### Ejecutar en desarrollo
+
+```bash
+npm run dev
+```
+
+### Estructura del Proyecto
+
+```
+personal-finance-app/
+├── components/          # Componentes Vue
+├── pages/              # Páginas de la aplicación
+├── server/             # Backend API
+│   ├── api/           # Endpoints de la API
+│   ├── database/      # Servicios de base de datos
+│   └── middleware/    # Middleware del servidor
+├── store/             # Estado global (Pinia)
+├── assets/            # Recursos estáticos
+└── public/            # Archivos públicos
+```
+
+## 📝 Notas de Producción
+
+- La aplicación actualmente usa JSON como base de datos
+- Se recomienda migrar a MongoDB o PostgreSQL para producción
+- Configura variables de entorno apropiadas
+- Implementa autenticación robusta
+- Configura backups regulares
+
+## 🔧 Troubleshooting
+
+### Problemas comunes:
+
+1. **Error de CORS**: Verifica la configuración en `nuxt.config.ts`
+2. **Base de datos no encontrada**: Asegúrate de que `db.json` existe
+3. **Errores de JWT**: Verifica que `JWT_SECRET` esté configurado
+
+## 📄 Licencia
+
+MIT
