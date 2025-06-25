@@ -125,6 +125,10 @@
                 <span class="mr-2">📝</span>
                 Nueva Deuda
                 </button>
+                <button @click="openTransferModal" class="btn-primary flex items-center justify-center">
+                <span class="mr-2">🔄</span>
+                Nueva Transferencia
+                </button>
             </div>
             </div>
 
@@ -216,21 +220,40 @@
                   </button>
                 </div>
                 <div v-if="Array.isArray(budgets) && budgets.length > 0" class="space-y-4">
-                  <div v-for="budget in budgets" :key="budget._id" class="space-y-2">
+                  <div v-for="budget in budgets" :key="budget._id" class="space-y-2 p-3 border border-gray-200 dark:border-gray-700 rounded-lg">
                     <div class="flex justify-between items-center">
                       <h3 class="font-medium text-gray-900 dark:text-white">{{ budget.category }}</h3>
-                      <span class="text-sm text-gray-600 dark:text-gray-400">{{ budget.month }}</span>
+                      <div class="flex items-center space-x-2">
+                        <span class="text-xs px-2 py-1 rounded-full" 
+                              :class="{
+                                'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': budget.type === 'gasto',
+                                'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': budget.type === 'ingreso',
+                                'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200': budget.type === 'ahorro',
+                                'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200': budget.type === 'inversion'
+                              }">
+                          {{ budget.type }}
+                        </span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ budget.month }}</span>
+                      </div>
                     </div>
+                    
+                    <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                      <span>{{ budget.paymentMethod }}</span>
+                      <span>{{ budget.frequency }}</span>
+                    </div>
+                    
                     <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
                       <div
                         class="bg-yellow-600 h-2.5 rounded-full"
-                        :style="{ width: `${(budget.spentAmount / budget.totalBudget * 100)}%` }"
+                        :style="{ width: `${Math.min((budget.spentAmount / budget.totalBudget * 100), 100)}%` }"
                       ></div>
                     </div>
+                    
                     <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                      <span>${{ formatAmount(budget.spentAmount) }}</span>
-                      <span>${{ formatAmount(budget.totalBudget) }}</span>
+                      <span>Gastado: ${{ formatAmount(budget.spentAmount) }}</span>
+                      <span>Presupuesto: ${{ formatAmount(budget.totalBudget) }}</span>
                     </div>
+                    
                     <div class="text-xs text-gray-500 dark:text-gray-400">{{ budget.description }}</div>
                   </div>
                 </div>
@@ -334,6 +357,14 @@
         @close="closeDetailModal"
         @submit-payment="handlePayment"
       />
+
+      <TransferForm
+        v-if="showTransferModal"
+        :is-open="showTransferModal"
+        :accounts="accounts"
+        @close="closeTransferModal"
+        @submit="handleTransferSubmit"
+      />
     </ClientOnly>
     </div>
 </template>
@@ -348,6 +379,7 @@ import ReportModal from '~/components/ReportModal.vue'
 import AccountForm from '~/components/AccountForm.vue'
 import AccountOperationsModal from '~/components/AccountOperationsModal.vue'
 import DebtLoanDetailModal from '~/components/DebtLoanDetailModal.vue'
+import TransferForm from '~/components/TransferForm.vue'
 
 // Estado de los modales
 const showTransactionModal = ref(false)
@@ -780,5 +812,50 @@ const handlePayment = (payment) => {
   // En una aplicación real, aquí llamarías a un endpoint para guardar el pago:
   // await fetch(`/api/${selectedItemType.value}s/${payment.itemId}/payments`, { ... })
   console.log('Pago registrado (solo en frontend):', payment)
+}
+
+const showTransferModal = ref(false)
+
+const openTransferModal = () => {
+  showTransferModal.value = true
+}
+
+const closeTransferModal = () => {
+  showTransferModal.value = false
+}
+
+const handleTransferSubmit = async (transfer) => {
+  try {
+    // 1. Registrar transacción de salida en cuenta origen
+    await fetch('http://localhost:3000/api/transactions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: transfer.amount,
+        category: 'Transferencia interna',
+        description: transfer.description,
+        date: transfer.date,
+        accountId: transfer.fromAccountId,
+        type: 'expense'
+      })
+    })
+    // 2. Registrar transacción de entrada en cuenta destino
+    await fetch('http://localhost:3000/api/transactions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: transfer.amount,
+        category: 'Transferencia interna',
+        description: transfer.description,
+        date: transfer.date,
+        accountId: transfer.toAccountId,
+        type: 'income'
+      })
+    })
+    await loadDashboardData()
+    closeTransferModal()
+  } catch (error) {
+    console.error('Error creando transferencia interna:', error)
+  }
 }
 </script> 

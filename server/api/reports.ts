@@ -86,27 +86,17 @@ export default defineEventHandler(async (event) => {
       }
     })
 
-    // Encontrar mayor deuda y préstamo
-    const deudas = cuentas.filter(c => c.saldo < 0)
-    const prestamos = cuentas.filter(c => c.saldo > 0 && (c.tipo.includes('Préstamo') || c.tipo.includes('prestamo')))
+    // Encontrar mayor deuda y préstamo usando los arrays de db.json
+    const deudasArr = db.getDeudas()
+    const prestamosArr = db.getPrestamos()
 
-    const mayorDeuda = deudas.length > 0 ? {
-      monto: Math.abs(deudas.reduce((max, cuenta) => 
-        Math.abs(cuenta.saldo) > Math.abs(max.saldo) ? cuenta : max
-      ).saldo),
-      cuenta: deudas.reduce((max, cuenta) => 
-        Math.abs(cuenta.saldo) > Math.abs(max.saldo) ? cuenta : max
-      ).nombre
-    } : { monto: 0, cuenta: '' }
+    const mayorDeuda = deudasArr.length > 0
+      ? deudasArr.reduce((max, deuda) => (Number(deuda.monto) > Number(max.monto) ? deuda : max), deudasArr[0])
+      : null
 
-    const mayorPrestamo = prestamos.length > 0 ? {
-      monto: prestamos.reduce((max, cuenta) => 
-        cuenta.saldo > max.saldo ? cuenta : max
-      ).saldo,
-      cuenta: prestamos.reduce((max, cuenta) => 
-        cuenta.saldo > max.saldo ? cuenta : max
-      ).nombre
-    } : { monto: 0, cuenta: '' }
+    const mayorPrestamo = prestamosArr.length > 0
+      ? prestamosArr.reduce((max, prestamo) => (Number(prestamo.monto) > Number(max.monto) ? prestamo : max), prestamosArr[0])
+      : null
 
     // Calcular tendencias
     const meses = Object.keys(ingresosPorMes).sort()

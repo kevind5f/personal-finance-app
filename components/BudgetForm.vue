@@ -24,6 +24,55 @@
         </div>
 
         <div>
+          <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de Presupuesto</label>
+          <select
+            id="type"
+            v-model="form.type"
+            required
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          >
+            <option value="gasto">Gasto</option>
+            <option value="ingreso">Ingreso</option>
+            <option value="ahorro">Ahorro</option>
+            <option value="inversion">Inversión</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="paymentMethod" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Forma de Pago</label>
+          <select
+            id="paymentMethod"
+            v-model="form.paymentMethod"
+            required
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          >
+            <option value="efectivo">Efectivo</option>
+            <option value="tarjeta">Tarjeta</option>
+            <option value="transferencia">Transferencia</option>
+            <option value="credito">Crédito</option>
+            <option value="debito">Débito</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="frequency" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Periodicidad</label>
+          <select
+            id="frequency"
+            v-model="form.frequency"
+            required
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          >
+            <option value="unico">Único</option>
+            <option value="semanal">Semanal</option>
+            <option value="mensual">Mensual</option>
+            <option value="trimestral">Trimestral</option>
+            <option value="semestral">Semestral</option>
+            <option value="anual">Anual</option>
+          </select>
+        </div>
+
+        <div>
           <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Monto</label>
           <input
             id="amount"
@@ -91,6 +140,9 @@ export default defineComponent({
   setup(props, { emit }) {
     const form = ref({
       category: '',
+      type: '',
+      paymentMethod: '',
+      frequency: '',
       amount: 0,
       month: new Date().toISOString().slice(0, 7),
       description: '',
@@ -98,9 +150,20 @@ export default defineComponent({
     })
 
     const handleSubmit = () => {
-      emit('submit', { ...form.value })
+      emit('submit', { 
+        ...form.value,
+        totalBudget: form.value.amount,
+        spentAmount: 0,
+        type: form.value.type,
+        paymentMethod: form.value.paymentMethod,
+        frequency: form.value.frequency,
+        initialBudget: form.value.amount
+      })
       form.value = {
         category: '',
+        type: '',
+        paymentMethod: '',
+        frequency: '',
         amount: 0,
         month: new Date().toISOString().slice(0, 7),
         description: '',

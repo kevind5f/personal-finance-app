@@ -35,6 +35,13 @@ export interface Presupuesto {
   gastado: number
   mes: string
   descripcion: string
+  tipo: 'gasto' | 'ingreso' | 'ahorro' | 'inversion'
+  formaPago: 'efectivo' | 'tarjeta' | 'transferencia' | 'credito' | 'debito' | 'otro'
+  periodicidad: 'unico' | 'semanal' | 'mensual' | 'trimestral' | 'semestral' | 'anual'
+  presupuestoInicial: number
+  fechaCreacion: string
+  fechaActualizacion: string
+  activo: boolean
 }
 
 interface Database {
@@ -217,10 +224,18 @@ export class DatabaseService {
   }
 
   createPresupuesto(presupuesto: Omit<Presupuesto, '_id'>): Presupuesto {
+    const fechaActual = new Date().toISOString()
     const nuevoPresupuesto = {
       _id: String(this.db.presupuestos.length + 1),
       ...presupuesto,
-      gastado: 0
+      gastado: presupuesto.gastado || 0,
+      tipo: presupuesto.tipo || 'gasto',
+      formaPago: presupuesto.formaPago || 'efectivo',
+      periodicidad: presupuesto.periodicidad || 'mensual',
+      presupuestoInicial: presupuesto.presupuestoInicial || presupuesto.monto,
+      fechaCreacion: presupuesto.fechaCreacion || fechaActual,
+      fechaActualizacion: presupuesto.fechaActualizacion || fechaActual,
+      activo: presupuesto.activo !== undefined ? presupuesto.activo : true
     }
     this.db.presupuestos.push(nuevoPresupuesto)
     this.saveDatabase()

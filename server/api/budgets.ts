@@ -8,7 +8,14 @@ const mapPresupuestoToBudget = (presupuesto: any) => ({
   totalBudget: presupuesto.monto,
   spentAmount: presupuesto.gastado,
   month: presupuesto.mes,
-  description: presupuesto.descripcion
+  description: presupuesto.descripcion,
+  type: presupuesto.tipo,
+  paymentMethod: presupuesto.formaPago,
+  frequency: presupuesto.periodicidad,
+  initialBudget: presupuesto.presupuestoInicial,
+  createdAt: presupuesto.fechaCreacion,
+  updatedAt: presupuesto.fechaActualizacion,
+  active: presupuesto.activo
 })
 
 // Función para mapear presupuesto de inglés a español
@@ -17,7 +24,14 @@ const mapBudgetToPresupuesto = (budget: any) => ({
   monto: budget.totalBudget,
   gastado: budget.spentAmount,
   mes: budget.month,
-  descripcion: budget.description
+  descripcion: budget.description,
+  tipo: budget.type,
+  formaPago: budget.paymentMethod,
+  periodicidad: budget.frequency,
+  presupuestoInicial: budget.initialBudget,
+  fechaCreacion: budget.createdAt,
+  fechaActualizacion: budget.updatedAt,
+  activo: budget.active
 })
 
 export default defineEventHandler(async (event) => {

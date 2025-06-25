@@ -873,7 +873,14 @@
       "monto": 600,
       "gastado": 640,
       "mes": "2025-06",
-      "descripcion": "Presupuesto mensual para alimentación"
+      "descripcion": "Presupuesto mensual para alimentación",
+      "tipo": "gasto",
+      "formaPago": "tarjeta",
+      "periodicidad": "mensual",
+      "presupuestoInicial": 600,
+      "fechaCreacion": "2025-01-01T00:00:00.000Z",
+      "fechaActualizacion": "2025-01-15T00:00:00.000Z",
+      "activo": true
     },
     {
       "_id": "2",
@@ -881,7 +888,14 @@
       "monto": 200,
       "gastado": 130,
       "mes": "2025-06",
-      "descripcion": "Presupuesto mensual para transporte"
+      "descripcion": "Presupuesto mensual para transporte",
+      "tipo": "gasto",
+      "formaPago": "efectivo",
+      "periodicidad": "mensual",
+      "presupuestoInicial": 200,
+      "fechaCreacion": "2025-01-01T00:00:00.000Z",
+      "fechaActualizacion": "2025-01-15T00:00:00.000Z",
+      "activo": true
     },
     {
       "_id": "3",
@@ -889,7 +903,14 @@
       "monto": 300,
       "gastado": 45,
       "mes": "2025-06",
-      "descripcion": "Presupuesto mensual para entretenimiento"
+      "descripcion": "Presupuesto mensual para entretenimiento",
+      "tipo": "gasto",
+      "formaPago": "tarjeta",
+      "periodicidad": "mensual",
+      "presupuestoInicial": 300,
+      "fechaCreacion": "2025-01-01T00:00:00.000Z",
+      "fechaActualizacion": "2025-01-15T00:00:00.000Z",
+      "activo": true
     },
     {
       "_id": "4",
@@ -897,7 +918,14 @@
       "monto": 250,
       "gastado": 168,
       "mes": "2025-06",
-      "descripcion": "Presupuesto mensual para servicios"
+      "descripcion": "Presupuesto mensual para servicios",
+      "tipo": "gasto",
+      "formaPago": "transferencia",
+      "periodicidad": "mensual",
+      "presupuestoInicial": 250,
+      "fechaCreacion": "2025-01-01T00:00:00.000Z",
+      "fechaActualizacion": "2025-01-15T00:00:00.000Z",
+      "activo": true
     },
     {
       "_id": "5",
@@ -905,19 +933,59 @@
       "monto": 400,
       "gastado": 150,
       "mes": "2025-06",
-      "descripcion": "Presupuesto mensual para vestimenta"
+      "descripcion": "Presupuesto mensual para vestimenta",
+      "tipo": "gasto",
+      "formaPago": "tarjeta",
+      "periodicidad": "mensual",
+      "presupuestoInicial": 400,
+      "fechaCreacion": "2025-01-01T00:00:00.000Z",
+      "fechaActualizacion": "2025-01-15T00:00:00.000Z",
+      "activo": true
     },
     {
       "_id": "6",
-      "gastado": 0
+      "categoria": "ahorro",
+      "monto": 1000,
+      "gastado": 0,
+      "mes": "2025-06",
+      "descripcion": "Meta de ahorro mensual",
+      "tipo": "ahorro",
+      "formaPago": "transferencia",
+      "periodicidad": "mensual",
+      "presupuestoInicial": 1000,
+      "fechaCreacion": "2025-01-01T00:00:00.000Z",
+      "fechaActualizacion": "2025-01-01T00:00:00.000Z",
+      "activo": true
     },
     {
       "_id": "7",
-      "gastado": 0
+      "categoria": "inversion",
+      "monto": 500,
+      "gastado": 0,
+      "mes": "2025-06",
+      "descripcion": "Inversión mensual en fondos",
+      "tipo": "inversion",
+      "formaPago": "transferencia",
+      "periodicidad": "mensual",
+      "presupuestoInicial": 500,
+      "fechaCreacion": "2025-01-01T00:00:00.000Z",
+      "fechaActualizacion": "2025-01-01T00:00:00.000Z",
+      "activo": true
     },
     {
       "_id": "8",
-      "gastado": 0
+      "categoria": "ingreso",
+      "monto": 3000,
+      "gastado": 0,
+      "mes": "2025-06",
+      "descripcion": "Ingreso mensual esperado",
+      "tipo": "ingreso",
+      "formaPago": "transferencia",
+      "periodicidad": "mensual",
+      "presupuestoInicial": 3000,
+      "fechaCreacion": "2025-01-01T00:00:00.000Z",
+      "fechaActualizacion": "2025-01-01T00:00:00.000Z",
+      "activo": true
     },
     {
       "_id": "9",
@@ -925,7 +993,14 @@
       "monto": 5000,
       "gastado": 0,
       "mes": "2025-06",
-      "descripcion": "2121"
+      "descripcion": "2121",
+      "tipo": "gasto",
+      "formaPago": "efectivo",
+      "periodicidad": "mensual",
+      "presupuestoInicial": 5000,
+      "fechaCreacion": "2025-01-01T00:00:00.000Z",
+      "fechaActualizacion": "2025-01-01T00:00:00.000Z",
+      "activo": true
     }
   ],
   "prestamos": [
