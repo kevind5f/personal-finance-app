@@ -224,6 +224,7 @@ import TransactionForm from '../components/TransactionForm.vue'
 import GoalForm from '../components/GoalForm.vue'
 import BudgetForm from '../components/BudgetForm.vue'
 import LoanForm from '../components/LoanForm.vue'
+import { useRouter } from 'vue-router'
 
 interface Account {
   _id: string
@@ -435,6 +436,14 @@ onMounted(async () => {
     if (loansRes.ok) loans.value = await loansRes.json()
   } catch (error) {
     console.error('Error loading data:', error)
+  }
+
+  const router = useRouter()
+  const token = localStorage.getItem('auth_token')
+  if (!token) {
+    router.replace('/login')
+  } else {
+    router.replace('/dashboard')
   }
 })
 </script> 

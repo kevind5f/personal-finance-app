@@ -1,46 +1,53 @@
 <template>
   <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto py-10 sm:px-8 lg:px-16">
       <!-- Header -->
-      <div class="mb-8 flex justify-between items-center">
-        <div>
+      <div class="mb-12 flex items-center gap-4 px-2 py-6 rounded-2xl bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 shadow">
+        <span class="text-4xl bg-blue-200 dark:bg-blue-800 text-blue-700 dark:text-blue-200 rounded-full p-4 shadow">⚙️</span>
+        <div class="flex-1">
           <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Configuración</h1>
-          <p class="mt-2 text-gray-600 dark:text-gray-400">Gestiona tus cuentas, categorías y reportes</p>
+          <p class="mt-2 text-gray-600 dark:text-gray-300 text-base">Gestiona tus cuentas, categorías y reportes</p>
         </div>
         <div class="flex items-center space-x-4">
-          <button @click="navigateTo('/dashboard')" class="btn-secondary flex items-center">
+          <button @click="navigateTo('/dashboard')" class="px-5 py-3 text-base font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-lg dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800 border border-blue-200 dark:border-blue-800 transition flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500">
             <span class="mr-2">←</span>
             Volver al Dashboard
           </button>
         </div>
       </div>
-
       <!-- Loading State -->
-      <div v-if="isLoading" class="flex justify-center items-center py-8">
+      <div v-if="isLoading" class="flex justify-center items-center py-12">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
-
       <!-- Error State -->
-      <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-8" role="alert">
-        <strong class="font-bold">Error!</strong>
-        <span class="block sm:inline">{{ error }}</span>
-      </div>
-
-      <!-- Contenido Principal -->
-      <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Gestión de Cuentas -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Gestión de Cuentas</h2>
+      <div v-else-if="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4 mb-8">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
           </div>
-          <div class="p-6 space-y-4">
+          <div class="ml-3">
+            <p class="text-sm text-red-700 dark:text-red-400">{{ error }}</p>
+          </div>
+        </div>
+      </div>
+      <!-- Contenido Principal -->
+      <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <!-- Gestión de Cuentas -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg flex flex-col">
+          <div class="px-8 py-6 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
+            <span class="text-2xl bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 rounded-full p-2">🏦</span>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Gestión de Cuentas</h2>
+          </div>
+          <div class="p-8 space-y-4 flex-1">
             <div v-if="accounts.length === 0" class="text-center py-8">
               <p class="text-gray-500 dark:text-gray-400">No hay cuentas configuradas</p>
-              <button @click="openAccountModal" class="btn-primary mt-4">
+              <button @click="openAccountModal" class="px-6 py-3 text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow border border-blue-700 transition mt-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 Crear Primera Cuenta
               </button>
             </div>
-            <div v-else v-for="account in accounts" :key="account._id" class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div v-else v-for="account in accounts" :key="account._id" class="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
               <div>
                 <p class="font-medium dark:text-white">{{ account.name }}</p>
                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ account.type }}</p>
@@ -51,33 +58,33 @@
                 </span>
                 <button 
                   @click="deleteAccount(account)" 
-                  class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
                   title="Eliminar cuenta"
                 >
                   🗑️
                 </button>
               </div>
             </div>
-            <button @click="openAccountModal" class="btn-primary w-full">
+            <button @click="openAccountModal" class="px-6 py-3 text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow border border-blue-700 transition w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
               Añadir Nueva Cuenta
             </button>
           </div>
         </div>
-
         <!-- Gestión de Categorías de Gastos -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Categorías de Gastos</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg flex flex-col">
+          <div class="px-8 py-6 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
+            <span class="text-2xl bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded-full p-2">💸</span>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Categorías de Gastos</h2>
           </div>
-          <div class="p-6 space-y-4">
+          <div class="p-8 space-y-4 flex-1">
             <div v-for="category in expenseCategories" :key="category.id" class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
               <div class="mb-2 flex justify-between items-center">
                 <h3 class="font-semibold text-gray-900 dark:text-white text-lg">{{ category.name }}</h3>
                 <div class="flex items-center space-x-2">
-                  <button @click="addSubcategory(category)" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-sm">
+                  <button @click="addSubcategory(category)" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                     + Subcategoría
                   </button>
-                  <button @click="deleteCategory('expense', category)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm">
+                  <button @click="deleteCategory('expense', category)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
                     🗑️
                 </button>
                 </div>
@@ -100,28 +107,28 @@
                     <button 
                       v-if="!sub.isEditing"
                       @click="editSubcategory(sub)" 
-                      class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-xs"
+                      class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       ✎
                     </button>
                     <button 
                       v-if="!sub.isEditing"
                       @click="deleteSubcategory(category, sub)" 
-                      class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-xs"
+                      class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-xs focus:outline-none focus:ring-2 focus:ring-red-500"
                     >
                       🗑️
                     </button>
                     <button 
                       v-if="sub.isEditing"
                       @click="saveSubcategory(category, sub)" 
-                      class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-xs"
+                      class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-xs focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
                       ✓
                     </button>
                     <button 
                       v-if="sub.isEditing"
                       @click="cancelEditSubcategory(sub)" 
-                      class="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 text-xs"
+                      class="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 text-xs focus:outline-none focus:ring-2 focus:ring-gray-500"
                     >
                       ✗
                     </button>
@@ -132,26 +139,26 @@
                 Sin subcategorías
               </div>
             </div>
-            <button @click="openCategoryModal('expense')" class="btn-primary w-full">
+            <button @click="openCategoryModal('expense')" class="px-6 py-3 text-base font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg shadow border border-red-700 transition w-full focus:outline-none focus:ring-2 focus:ring-red-500">
               Nueva Categoría de Gasto
             </button>
           </div>
         </div>
-
         <!-- Gestión de Categorías de Ingresos -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Categorías de Ingresos</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg flex flex-col">
+          <div class="px-8 py-6 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
+            <span class="text-2xl bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded-full p-2">💰</span>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Categorías de Ingresos</h2>
           </div>
-          <div class="p-6 space-y-4">
+          <div class="p-8 space-y-4 flex-1">
             <div v-for="category in incomeCategories" :key="category.id" class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
               <div class="mb-2 flex justify-between items-center">
                 <h3 class="font-semibold text-gray-900 dark:text-white text-lg">{{ category.name }}</h3>
                 <div class="flex items-center space-x-2">
-                  <button @click="addSubcategory(category)" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-sm">
+                  <button @click="addSubcategory(category)" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                     + Subcategoría
                   </button>
-                  <button @click="deleteCategory('income', category)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm">
+                  <button @click="deleteCategory('income', category)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
                     🗑️
                 </button>
                 </div>
@@ -174,28 +181,28 @@
                     <button 
                       v-if="!sub.isEditing"
                       @click="editSubcategory(sub)" 
-                      class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-xs"
+                      class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       ✎
                     </button>
                     <button 
                       v-if="!sub.isEditing"
                       @click="deleteSubcategory(category, sub)" 
-                      class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-xs"
+                      class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-xs focus:outline-none focus:ring-2 focus:ring-red-500"
                     >
                       🗑️
                     </button>
                     <button 
                       v-if="sub.isEditing"
                       @click="saveSubcategory(category, sub)" 
-                      class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-xs"
+                      class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-xs focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
                       ✓
                     </button>
                     <button 
                       v-if="sub.isEditing"
                       @click="cancelEditSubcategory(sub)" 
-                      class="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 text-xs"
+                      class="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 text-xs focus:outline-none focus:ring-2 focus:ring-gray-500"
                     >
                       ✗
                     </button>
@@ -206,7 +213,7 @@
                 Sin subcategorías
               </div>
             </div>
-            <button @click="openCategoryModal('income')" class="btn-primary w-full">
+            <button @click="openCategoryModal('income')" class="px-6 py-3 text-base font-semibold text-white bg-green-600 hover:bg-green-700 rounded-lg shadow border border-green-700 transition w-full focus:outline-none focus:ring-2 focus:ring-green-500">
               Nueva Categoría de Ingreso
             </button>
           </div>

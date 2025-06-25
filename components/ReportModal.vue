@@ -1,31 +1,23 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-7xl w-full mx-4 max-h-[95vh] overflow-y-auto">
-      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <div class="flex justify-between items-center">
-          <div>
-            <h3 class="text-2xl font-semibold text-gray-900 dark:text-white">
-              📊 Reportes Financieros
-            </h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Análisis completo de tus finanzas personales
-            </p>
-          </div>
-          <button
-            @click="$emit('close')"
-            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl"
-          >
-          ✕
-        </button>
+  <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-7xl w-full mx-4 max-h-[95vh] overflow-y-auto border border-gray-200 dark:border-gray-800 flex flex-col">
+      <!-- Encabezado con icono -->
+      <div class="flex items-center gap-3 px-10 py-8 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800">
+        <span class="text-4xl bg-blue-200 dark:bg-blue-800 text-blue-700 dark:text-blue-200 rounded-full p-4 shadow">📊</span>
+        <div class="flex-1">
+          <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Reportes Financieros</h3>
+          <p class="text-base text-gray-600 dark:text-gray-300 mt-1">Análisis completo de tus finanzas personales</p>
         </div>
+        <button
+          @click="$emit('close')"
+          class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-3xl rounded-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >✕</button>
       </div>
-
-      <div class="px-6 py-4">
+      <div class="px-10 py-8 flex-1 overflow-y-auto space-y-10">
         <!-- Loading State -->
         <div v-if="isLoading" class="flex justify-center items-center py-12">
           <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
-
         <!-- Error State -->
         <div v-else-if="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4 mb-6">
           <div class="flex">
@@ -36,33 +28,36 @@
             </div>
             <div class="ml-3">
               <p class="text-sm text-red-700 dark:text-red-400">{{ error }}</p>
-          </div>
+            </div>
           </div>
         </div>
-
         <!-- Content -->
-        <div v-else class="space-y-8">
+        <div v-else class="space-y-10">
           <!-- Resumen General -->
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 text-white">
-              <h4 class="text-sm font-medium opacity-90">Ingresos Totales</h4>
-              <p class="text-2xl font-bold">${{ formatAmount(reportData.totalIncome) }}</p>
-              <p class="text-xs opacity-75">{{ reportData.totalTransactions }} transacciones</p>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-gradient-to-r from-green-400 to-green-600 rounded-2xl p-6 text-white flex flex-col items-start shadow-lg">
+              <span class="text-3xl bg-white/30 dark:bg-white/10 rounded-full p-2 mb-2">💰</span>
+              <h4 class="text-base font-medium opacity-90">Ingresos Totales</h4>
+              <p class="text-3xl font-bold mt-1">${{ formatAmount(reportData.totalIncome) }}</p>
+              <p class="text-xs opacity-75 mt-1">{{ reportData.totalTransactions }} transacciones</p>
             </div>
-            <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-4 text-white">
-              <h4 class="text-sm font-medium opacity-90">Gastos Totales</h4>
-              <p class="text-2xl font-bold">${{ formatAmount(reportData.totalExpenses) }}</p>
-              <p class="text-xs opacity-75">{{ reportData.totalTransactions }} transacciones</p>
+            <div class="bg-gradient-to-r from-red-400 to-red-600 rounded-2xl p-6 text-white flex flex-col items-start shadow-lg">
+              <span class="text-3xl bg-white/30 dark:bg-white/10 rounded-full p-2 mb-2">💸</span>
+              <h4 class="text-base font-medium opacity-90">Gastos Totales</h4>
+              <p class="text-3xl font-bold mt-1">${{ formatAmount(reportData.totalExpenses) }}</p>
+              <p class="text-xs opacity-75 mt-1">{{ reportData.totalTransactions }} transacciones</p>
             </div>
-            <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 text-white">
-              <h4 class="text-sm font-medium opacity-90">Balance Neto</h4>
-              <p class="text-2xl font-bold">${{ formatAmount(reportData.netBalance) }}</p>
-              <p class="text-xs opacity-75">Diferencia total</p>
+            <div class="bg-gradient-to-r from-blue-400 to-blue-600 rounded-2xl p-6 text-white flex flex-col items-start shadow-lg">
+              <span class="text-3xl bg-white/30 dark:bg-white/10 rounded-full p-2 mb-2">💼</span>
+              <h4 class="text-base font-medium opacity-90">Balance Neto</h4>
+              <p class="text-3xl font-bold mt-1">${{ formatAmount(reportData.netBalance) }}</p>
+              <p class="text-xs opacity-75 mt-1">Diferencia total</p>
             </div>
-            <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-4 text-white">
-              <h4 class="text-sm font-medium opacity-90">Cuentas Activas</h4>
-              <p class="text-2xl font-bold">{{ reportData.activeAccounts }}</p>
-              <p class="text-xs opacity-75">Incluyendo deudas</p>
+            <div class="bg-gradient-to-r from-purple-400 to-purple-600 rounded-2xl p-6 text-white flex flex-col items-start shadow-lg">
+              <span class="text-3xl bg-white/30 dark:bg-white/10 rounded-full p-2 mb-2">🏦</span>
+              <h4 class="text-base font-medium opacity-90">Cuentas Activas</h4>
+              <p class="text-3xl font-bold mt-1">{{ reportData.activeAccounts }}</p>
+              <p class="text-xs opacity-75 mt-1">Incluyendo deudas</p>
             </div>
           </div>
 
@@ -207,8 +202,8 @@
                   <p>Última: {{ formatDate(account.lastTransaction) }}</p>
                 </div>
               </div>
+            </div>
           </div>
-        </div>
 
           <!-- Tendencias -->
           <div class="bg-white dark:bg-gray-700 rounded-lg shadow p-6">

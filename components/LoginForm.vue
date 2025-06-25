@@ -1,22 +1,22 @@
 <template>
-    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
+    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-200 via-blue-400 to-indigo-500 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-lg w-full space-y-10">
             <div class="text-center">
-                <div class="mx-auto h-16 w-16 bg-indigo-600 rounded-full flex items-center justify-center mb-4">
-                    <span class="text-2xl text-white font-bold">💰</span>
+                <div class="mx-auto h-20 w-20 bg-blue-600 dark:bg-blue-800 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                    <span class="text-4xl text-white font-bold">💰</span>
                 </div>
-                <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white">
+                <h2 class="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                     Finanzas Personales
                 </h2>
-                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                <p class="mt-3 text-lg text-gray-700 dark:text-gray-300">
                     Inicia sesión en tu cuenta
                 </p>
             </div>
             
-            <div class="bg-white dark:bg-gray-800 py-8 px-6 shadow-xl rounded-lg">
-                <form class="space-y-6" @submit.prevent="handleLogin">
+            <div class="bg-white dark:bg-gray-900 py-10 px-8 shadow-2xl rounded-2xl border border-gray-200 dark:border-gray-800">
+                <form class="space-y-8" @submit.prevent="handleLogin">
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label for="email" class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Email
                         </label>
                         <input
@@ -25,13 +25,13 @@
                         name="email"
                         type="email"
                         required
-                        class="appearance-none relative block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-gray-700"
+                        class="block w-full px-5 py-4 border border-gray-300 dark:border-gray-600 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg bg-white dark:bg-gray-800 shadow-sm"
                         placeholder="tu@email.com"
                         />
                     </div>
                     
                     <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label for="password" class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Contraseña
                         </label>
                         <input
@@ -40,7 +40,7 @@
                         name="password"
                         type="password"
                         required
-                        class="appearance-none relative block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-gray-700"
+                        class="block w-full px-5 py-4 border border-gray-300 dark:border-gray-600 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg bg-white dark:bg-gray-800 shadow-sm"
                         placeholder="••••••••"
                         />
                     </div>
@@ -49,7 +49,7 @@
                         <button
                         type="submit"
                         :disabled="loading"
-                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                        class="w-full flex justify-center py-4 px-4 border border-transparent text-lg font-semibold rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transition-colors duration-200"
                         >
                             <span v-if="loading" class="flex items-center">
                                 <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -70,18 +70,18 @@
                                 </svg>
                             </div>
                             <div class="ml-3">
-                                <p class="text-sm text-red-700 dark:text-red-400">{{ error }}</p>
+                                <p class="text-base text-red-700 dark:text-red-400">{{ error }}</p>
                             </div>
                         </div>
                     </div>
                 </form>
 
                 <!-- Credenciales de prueba -->
-                <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
-                    <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">
-                        🔑 Credenciales de Prueba
+                <div class="mt-8 p-5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl text-center">
+                    <h3 class="text-base font-semibold text-blue-800 dark:text-blue-300 mb-2 flex items-center justify-center gap-2">
+                        <span class="text-xl">🔑</span> Credenciales de Prueba
                     </h3>
-                    <div class="text-xs text-blue-700 dark:text-blue-400 space-y-1">
+                    <div class="text-base text-blue-700 dark:text-blue-400 space-y-1">
                         <p><strong>Email:</strong> test@example.com</p>
                         <p><strong>Contraseña:</strong> password123</p>
                     </div>

@@ -1,13 +1,18 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-      <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-        {{ isIncome ? 'Nuevo Ingreso' : 'Nuevo Gasto' }}
-      </h2>
-      
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+  <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 w-full max-w-md border border-gray-200 dark:border-gray-800 flex flex-col">
+      <div class="flex items-center gap-3 mb-6">
+        <span
+          class="text-2xl rounded-full p-2"
+          :class="isIncome ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200' : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200'"
+        >
+          {{ isIncome ? '💰' : '💸' }}
+        </span>
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ isIncome ? 'Nuevo Ingreso' : 'Nuevo Gasto' }}</h2>
+      </div>
+      <form @submit.prevent="handleSubmit" class="space-y-6">
         <div>
-          <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Monto</label>
+          <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Monto</label>
           <input
             id="amount"
             v-model.number="form.amount"
@@ -15,71 +20,67 @@
             step="0.01"
             min="0.01"
             required
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base"
           />
           <span v-if="amountError" class="text-xs text-red-500 mt-1 block">El monto debe ser positivo</span>
         </div>
-
         <div>
-          <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Categoría</label>
+          <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Categoría</label>
           <select
             id="category"
             v-model="form.category"
             required
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base"
           >
             <option v-for="cat in categories" :key="cat.name" :value="cat.name">{{ cat.name }}</option>
           </select>
         </div>
-
         <div v-if="subcategoriesForSelected.length">
-          <label for="subcategory" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Subcategoría</label>
+          <label for="subcategory" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subcategoría</label>
           <select
             id="subcategory"
             v-model="form.subcategory"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base"
           >
             <option value="">Selecciona una subcategoría</option>
             <option v-for="sub in subcategoriesForSelected" :key="sub.id" :value="sub.name">{{ sub.name }}</option>
           </select>
         </div>
-
         <div>
-          <label for="date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha</label>
+          <label for="date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha</label>
           <input
             id="date"
             v-model="form.date"
             type="date"
             required
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base"
           />
         </div>
-
         <div>
-          <label for="account" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cuenta</label>
+          <label for="account" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cuenta</label>
           <select
             id="account"
             v-model="form.accountId"
             required
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base"
           >
             <option v-for="account in accounts" :key="account._id" :value="account._id">
               {{ account.name }} ({{ account.type }})
             </option>
           </select>
         </div>
-
-        <div class="flex justify-end space-x-3 mt-6">
+        <div class="flex justify-end space-x-4 mt-8">
           <button
             type="button"
             @click="$emit('close')"
-            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            class="px-6 py-3 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-700 transition"
           >
             Cancelar
           </button>
           <button
             type="submit"
-            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+            :class="isIncome ? 'bg-blue-600 hover:bg-blue-700 border border-blue-700' : 'bg-red-600 hover:bg-red-700 border border-red-700'"
+            class="px-6 py-3 text-base font-semibold text-white rounded-lg shadow transition"
           >
             {{ isIncome ? 'Registrar Ingreso' : 'Registrar Gasto' }}
           </button>

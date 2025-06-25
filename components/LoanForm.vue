@@ -1,31 +1,43 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+  <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-gray-200 dark:border-gray-800">
       
       <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+      <div class="px-8 py-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 flex items-center gap-3">
+        <span
+          class="text-2xl rounded-full p-2"
+          :class="isLoan ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200' : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200'"
+        >
+          {{ isLoan ? '💵' : '💸' }}
+        </span>
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">
           {{ isLoan ? 'Nuevo Préstamo' : 'Nueva Deuda' }}
         </h2>
+        <button
+          type="button"
+          @click="$emit('close')"
+          class="ml-auto text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl rounded-full px-2 py-1 focus:outline-none focus:ring-2"
+          :class="isLoan ? 'focus:ring-green-500' : 'focus:ring-red-500'"
+        >✕</button>
       </div>
 
       <!-- Form Content (Scrollable) -->
-      <form @submit.prevent="handleSubmit" class="p-6 space-y-6 overflow-y-auto">
+      <form @submit.prevent="handleSubmit" class="p-8 space-y-8 overflow-y-auto">
         <div class="mb-4 flex justify-end">
-          <button type="button" @click="setDefaultInformal" class="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">Default informal</button>
+          <button type="button" @click="setDefaultInformal" class="px-4 py-2 text-base bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">Default informal</button>
         </div>
         
         <!-- Field Groups -->
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white border-b pb-2">Datos del Préstamo</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Monto total prestado (capital)</label>
-            <input v-model.number="form.monto" type="number" min="0.01" step="0.01" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Monto total prestado (capital)</label>
+            <input v-model.number="form.monto" type="number" min="0.01" step="0.01" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base" />
             <span v-if="amountError" class="text-xs text-red-500 mt-1 block">El monto debe ser mayor a cero</span>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Moneda</label>
-            <select v-model="form.moneda" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Moneda</label>
+            <select v-model="form.moneda" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base">
               <option value="USD">USD</option>
               <option value="EUR">EUR</option>
               <option value="MXN">MXN</option>
@@ -38,24 +50,24 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha en que se otorga el préstamo</label>
-            <input v-model="form.fecha_otorgamiento" type="date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha en que se otorga el préstamo</label>
+            <input v-model="form.fecha_otorgamiento" type="date" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Motivo o descripción de la deuda (opcional)</label>
-            <input v-model="form.motivo" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Motivo o descripción de la deuda (opcional)</label>
+            <input v-model="form.motivo" type="text" class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base" />
           </div>
         </div>
 
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white border-b pb-2">Condiciones del Pago</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Plazo total</label>
-            <input v-model="form.plazo_total" type="text" placeholder="Ej: 12 meses, 2 años" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Plazo total</label>
+            <input v-model="form.plazo_total" type="text" placeholder="Ej: 12 meses, 2 años" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Frecuencia de pago</label>
-            <select v-model="form.frecuencia_pago" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Frecuencia de pago</label>
+            <select v-model="form.frecuencia_pago" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base">
               <option value="mensual">Mensual</option>
               <option value="quincenal">Quincenal</option>
               <option value="semanal">Semanal</option>
@@ -63,68 +75,68 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Número de cuotas</label>
-            <input v-model.number="form.numero_cuotas" type="number" min="1" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Número de cuotas</label>
+            <input v-model.number="form.numero_cuotas" type="number" min="1" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de primer pago</label>
-            <input v-model="form.fecha_primer_pago" type="date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha de primer pago</label>
+            <input v-model="form.fecha_primer_pago" type="date" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de último pago (estimada)</label>
-            <input v-model="form.fecha_ultimo_pago" type="date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha de último pago (estimada)</label>
+            <input v-model="form.fecha_ultimo_pago" type="date" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base" />
           </div>
         </div>
         
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white border-b pb-2">Intereses</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tasa de interés (%)</label>
-            <input v-model.number="form.tasa_interes" type="number" min="0" step="0.01" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Tasa de interés (%)</label>
+            <input v-model.number="form.tasa_interes" type="number" min="0" step="0.01" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de interés</label>
-            <select v-model="form.tipo_interes" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Tipo de interés</label>
+            <select v-model="form.tipo_interes" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base">
               <option value="fijo">Fijo</option>
               <option value="variable">Variable</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cálculo del interés</label>
-            <select v-model="form.calculo_interes" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Cálculo del interés</label>
+            <select v-model="form.calculo_interes" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base">
               <option value="saldo">Sobre saldo</option>
               <option value="monto original">Sobre monto original</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Interés moratorio (%)</label>
-            <input v-model.number="form.interes_moratorio" type="number" min="0" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Interés moratorio (%)</label>
+            <input v-model.number="form.interes_moratorio" type="number" min="0" step="0.01" class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base" />
           </div>
         </div>
 
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white border-b pb-2">Detalles de Cuotas</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Valor estimado de la cuota</label>
-            <input v-model.number="form.valor_cuota" type="number" min="0" step="0.01" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Valor estimado de la cuota</label>
+            <input v-model.number="form.valor_cuota" type="number" min="0" step="0.01" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Incluye intereses?</label>
-            <select v-model="form.incluye_intereses" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Incluye intereses?</label>
+            <select v-model="form.incluye_intereses" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base">
               <option :value="true">Sí</option>
               <option :value="false">No</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">¿Permite adelantos?</label>
-            <select v-model="form.permite_adelantos" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">¿Permite adelantos?</label>
+            <select v-model="form.permite_adelantos" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base">
               <option :value="true">Sí</option>
               <option :value="false">No</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Forma de pago</label>
-            <select v-model="form.forma_pago" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Forma de pago</label>
+            <select v-model="form.forma_pago" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base">
               <option value="efectivo">Efectivo</option>
               <option value="transferencia">Transferencia</option>
               <option value="tarjeta">Tarjeta</option>
@@ -133,8 +145,8 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cuenta destino / datos de cobro</label>
-            <select v-model="form.cuenta_destino" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Cuenta destino / datos de cobro</label>
+            <select v-model="form.cuenta_destino" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base">
               <option v-for="cuenta in cuentas" :key="cuenta._id" :value="cuenta.name">{{ cuenta.name }}</option>
             </select>
           </div>
@@ -142,9 +154,12 @@
       </form>
 
       <!-- Modal Footer -->
-      <div class="flex justify-end space-x-3 p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <button type="button" @click="$emit('close')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">Cancelar</button>
-        <button @click="handleSubmit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md">{{ isLoan ? 'Registrar Préstamo' : 'Registrar Deuda' }}</button>
+      <div class="flex justify-end space-x-4 mt-8">
+        <button type="button" @click="$emit('close')" class="px-6 py-3 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-700 transition">Cancelar</button>
+        <button @click="handleSubmit"
+          class="px-6 py-3 text-base font-semibold text-white rounded-lg shadow border transition"
+          :class="isLoan ? 'bg-green-600 hover:bg-green-700 border-green-700' : 'bg-red-600 hover:bg-red-700 border-red-700'"
+        >{{ isLoan ? 'Registrar Préstamo' : 'Registrar Deuda' }}</button>
       </div>
     </div>
   </div>

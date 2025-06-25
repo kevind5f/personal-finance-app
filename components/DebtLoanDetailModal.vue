@@ -1,17 +1,25 @@
 <template>
   <Transition name="modal-fade">
     <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] flex flex-col">
-        
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center flex-shrink-0">
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] flex flex-col border border-gray-200 dark:border-gray-800">
+        <!-- Modal Header -->
+        <div class="flex items-center gap-3 px-8 py-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <span
+            class="text-2xl rounded-full p-2"
+            :class="itemType === 'deuda' ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200' : 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200'"
+          >
+            {{ itemType === 'deuda' ? '💸' : '💵' }}
+          </span>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white flex-1">
             Detalle de {{ itemType === 'deuda' ? 'Deuda' : 'Préstamo' }}
           </h3>
-          <button @click="$emit('close')" class="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white transition-colors rounded-full p-1">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          <button @click="$emit('close')"
+            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl rounded-full px-2 py-1 focus:outline-none focus:ring-2"
+            :class="itemType === 'deuda' ? 'focus:ring-red-500' : 'focus:ring-green-500'"
+          >
+            ✕
           </button>
         </div>
-
         <div class="p-6 space-y-6 overflow-y-auto">
           <!-- Item Details -->
           <div v-if="item" class="space-y-4">

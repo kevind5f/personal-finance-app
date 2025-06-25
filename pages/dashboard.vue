@@ -1,33 +1,34 @@
 <template>
     <div>
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
             <!-- Header -->
-            <div class="mb-8 flex justify-between items-center">
+            <div class="mb-12 flex flex-col md:flex-row md:justify-between md:items-center gap-6 border-b border-gray-200 dark:border-gray-800 pb-6">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-                <p class="mt-2 text-gray-600 dark:text-gray-400">Bienvenido a tu panel de control financiero</p>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight mb-1 flex items-center gap-2">
+                <span class="inline-block bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 rounded-lg px-3 py-1 text-2xl">💰</span>
+                Dashboard
+                </h1>
+                <p class="text-base text-gray-600 dark:text-gray-400">Bienvenido a tu panel de control financiero</p>
             </div>
-            <div class="flex items-center space-x-4">
+            <div class="flex flex-wrap items-center gap-2 justify-end">
                 <button 
                 @click="toggleTheme" 
-                class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                class="p-2 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-xl"
                 :title="isDarkMode ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'"
                 >
-                <span v-if="isDarkMode" class="text-2xl">☀️</span>
-                <span v-else class="text-2xl">🌙</span>
+                <span v-if="isDarkMode">☀️</span>
+                <span v-else>🌙</span>
                 </button>
-            <button @click="openReportModal" class="btn-secondary flex items-center">
-              <span class="mr-2">📊</span>
-              Reportes
+            <button @click="openReportModal" class="flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition">
+              <span>📊</span> Reportes
             </button>
-                <button @click="navigateTo('/settings')" class="btn-secondary flex items-center">
-                <span class="mr-2">⚙️</span>
-                Configuración
+                <button @click="navigateTo('/settings')" class="flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition">
+                <span>⚙️</span> Configuración
                 </button>
                 <button
                 @click="handleLogout"
-                class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                class="px-4 py-2 rounded-md border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-200 hover:bg-red-100 dark:hover:bg-red-800 font-semibold transition"
                 >
                 Cerrar sesión
                 </button>
@@ -48,55 +49,68 @@
         <!-- Content -->
         <div v-else>
             <!-- Resumen de Cuentas -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Balance Total</h3>
-              <p class="mt-2 text-3xl font-bold text-green-600 dark:text-green-400">${{ formatAmount(dashboardSummary.total_balance) }}</p>
-              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Balance actual de todas las cuentas</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="rounded-xl shadow-sm p-6 bg-gradient-to-br from-green-100 to-green-50 dark:from-green-900 dark:to-gray-800 flex items-center gap-4">
+                <div class="text-3xl text-green-800 dark:text-green-200 bg-green-400 dark:bg-green-700 bg-opacity-90 dark:bg-opacity-90 rounded-full p-3 flex items-center justify-center" style="min-width:3.5rem; min-height:3.5rem;">💵</div>
+                <div>
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-1">Balance Total</h3>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ formatAmount(dashboardSummary.total_balance) }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Balance actual de todas las cuentas</p>
+                </div>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Ingresos Mensuales</h3>
-              <p class="mt-2 text-3xl font-bold text-blue-600 dark:text-blue-400">${{ formatAmount(dashboardSummary.monthly_income) }}</p>
-              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Ingresos del mes actual</p>
+            <div class="rounded-xl shadow-sm p-6 bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900 dark:to-gray-800 flex items-center gap-4">
+                <div class="text-3xl text-blue-800 dark:text-blue-200 bg-blue-400 dark:bg-blue-700 bg-opacity-90 dark:bg-opacity-90 rounded-full p-3 flex items-center justify-center" style="min-width:3.5rem; min-height:3.5rem;">⬆️</div>
+                <div>
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-1">Ingresos Mensuales</h3>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ formatAmount(dashboardSummary.monthly_income) }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Ingresos del mes actual</p>
+                </div>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Gastos Mensuales</h3>
-              <p class="mt-2 text-3xl font-bold text-red-600 dark:text-red-400">${{ formatAmount(dashboardSummary.monthly_expenses) }}</p>
-              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Gastos del mes actual</p>
+            <div class="rounded-xl shadow-sm p-6 bg-gradient-to-br from-red-100 to-red-50 dark:from-red-900 dark:to-gray-800 flex items-center gap-4">
+                <div class="text-3xl text-red-800 dark:text-red-200 bg-red-400 dark:bg-red-700 bg-opacity-90 dark:bg-opacity-90 rounded-full p-3 flex items-center justify-center" style="min-width:3.5rem; min-height:3.5rem;">⬇️</div>
+                <div>
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-1">Gastos Mensuales</h3>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ formatAmount(dashboardSummary.monthly_expenses) }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Gastos del mes actual</p>
+                </div>
             </div>
             </div>
 
             <!-- Cuentas -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-8">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Mis Cuentas</h2>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-12 border border-gray-200 dark:border-gray-700">
+            <div class="px-8 py-5 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
+                <span class="text-xl">🏦</span>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Mis Cuentas</h2>
             </div>
-            <div class="p-6">
+            <div class="p-8">
               <div v-if="accounts.length === 0" class="text-center py-8">
                 <p class="text-gray-500 dark:text-gray-400">No hay cuentas disponibles</p>
-                <button @click="openAccountModal" class="btn-primary mt-4">
+                <button @click="openAccountModal" class="px-5 py-2 rounded-md border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-800 font-medium transition mt-4">
                   Crear Primera Cuenta
                 </button>
               </div>
-              <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div v-for="account in accounts" :key="account._id" 
-                    class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex flex-col">
+                    class="bg-gray-50 dark:bg-gray-700 rounded-lg p-5 flex flex-col shadow-sm border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-400 transition cursor-pointer">
                     <div class="flex justify-between items-start">
                     <div>
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ account.name }}</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ account.type }}</p>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        <span class="inline-block text-lg">💳</span> {{ account.name }}
+                        </h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 capitalize">{{ account.type }}</p>
                     </div>
-                    <button @click="showAccountOperations(account)" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">
+                    <button @click.stop="showAccountOperations(account)" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-xs font-medium px-2 py-1 rounded transition border border-transparent hover:border-blue-300 dark:hover:border-blue-300 bg-transparent">
                       📊 Operaciones
                     </button>
                     </div>
                     <div class="mt-4">
-                    <p class="text-2xl font-bold" :class="account.balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                    <p class="text-xl font-bold" :class="account.balance >= 0 ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'">
                       ${{ formatAmount(account.balance) }}
                     </p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                    <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-semibold"
+                      :class="account.balance >= 0 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'">
                       {{ account.balance >= 0 ? 'Disponible' : 'Deuda' }}
-                    </p>
+                    </span>
                     </div>
                 </div>
                 </div>
@@ -104,119 +118,120 @@
             </div>
 
             <!-- Acciones Rápidas -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-8">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Acciones Rápidas</h2>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-12 border border-gray-200 dark:border-gray-700">
+            <div class="px-8 py-5 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
+                <span class="text-xl">⚡</span>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Acciones Rápidas</h2>
             </div>
-            <div class="p-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-                <button @click="openTransactionModal('income')" class="btn-primary flex items-center justify-center">
-                <span class="mr-2">💰</span>
+            <div class="p-8 grid grid-cols-1 md:grid-cols-5 gap-4">
+                <button @click="openTransactionModal('income')" class="flex flex-col items-center justify-center gap-2 py-5 text-base rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition">
+                <span class="text-2xl">💰</span>
                 Añadir Ingreso
                 </button>
-                <button @click="openTransactionModal('expense')" class="btn-primary flex items-center justify-center">
-                <span class="mr-2">💸</span>
+                <button @click="openTransactionModal('expense')" class="flex flex-col items-center justify-center gap-2 py-5 text-base rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition">
+                <span class="text-2xl">💸</span>
                 Añadir Gasto
                 </button>
-                <button @click="openLoanModal(true)" class="btn-primary flex items-center justify-center">
-                <span class="mr-2">🏦</span>
+                <button @click="openLoanModal(true)" class="flex flex-col items-center justify-center gap-2 py-5 text-base rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition">
+                <span class="text-2xl">🏦</span>
                 Nuevo Préstamo
                 </button>
-                <button @click="openLoanModal(false)" class="btn-primary flex items-center justify-center">
-                <span class="mr-2">📝</span>
+                <button @click="openLoanModal(false)" class="flex flex-col items-center justify-center gap-2 py-5 text-base rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition">
+                <span class="text-2xl">📝</span>
                 Nueva Deuda
                 </button>
-                <button @click="openTransferModal" class="btn-primary flex items-center justify-center">
-                <span class="mr-2">🔄</span>
+                <button @click="openTransferModal" class="flex flex-col items-center justify-center gap-2 py-5 text-base rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition">
+                <span class="text-2xl">🔄</span>
                 Nueva Transferencia
                 </button>
             </div>
             </div>
 
             <!-- Manejo de Deudas -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-8">
-              <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Mis Deudas</h2>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-12 border border-gray-200 dark:border-gray-700">
+              <div class="px-8 py-5 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
+                <span class="text-xl">📝</span>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Mis Deudas</h2>
               </div>
-              <div class="p-6">
+              <div class="p-8">
                 <div v-if="deudas.length === 0" class="text-center py-4">
                   <p class="text-gray-500 dark:text-gray-400">No tienes deudas registradas</p>
                 </div>
                 <div v-else class="space-y-4">
                   <div v-for="deuda in deudas" :key="deuda._id" @click="openDetailModal(deuda, 'deuda')" class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700 pb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors duration-200">
                     <div class="flex-grow">
-                      <h3 class="font-medium text-gray-900 dark:text-white">{{ deuda.nombre }}</h3>
+                      <h3 class="font-medium text-gray-900 dark:text-white flex items-center gap-2">💳 {{ deuda.nombre }}</h3>
                       <p class="text-gray-600 dark:text-gray-400">{{ deuda.motivo }}</p>
                       <p class="text-xs text-gray-400 dark:text-gray-500">Adquirida: {{ formatDate(deuda.fecha_adquisicion) }} | Cuotas: {{ deuda.numero_cuotas }} | Tasa: {{ deuda.tasa_interes }}%</p>
                     </div>
-                    <span class="text-lg font-semibold text-red-600 dark:text-red-400 mt-2 md:mt-0">${{ formatAmount(deuda.monto) }}</span>
+                    <span class="text-base font-semibold text-red-700 dark:text-red-300 mt-2 md:mt-0">${{ formatAmount(deuda.monto) }}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Manejo de Préstamos -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-8">
-              <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Mis Préstamos</h2>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-12 border border-gray-200 dark:border-gray-700">
+              <div class="px-8 py-5 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
+                <span class="text-xl">🏦</span>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Mis Préstamos</h2>
               </div>
-              <div class="p-6">
+              <div class="p-8">
                 <div v-if="prestamos.length === 0" class="text-center py-4">
                   <p class="text-gray-500 dark:text-gray-400">No tienes préstamos registrados</p>
                 </div>
                 <div v-else class="space-y-4">
                   <div v-for="prestamo in prestamos" :key="prestamo._id" @click="openDetailModal(prestamo, 'prestamo')" class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700 pb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors duration-200">
                     <div class="flex-grow">
-                      <h3 class="font-medium text-gray-900 dark:text-white">{{ prestamo.nombre }}</h3>
+                      <h3 class="font-medium text-gray-900 dark:text-white flex items-center gap-2">💳 {{ prestamo.nombre }}</h3>
                       <p class="text-gray-600 dark:text-gray-400">{{ prestamo.motivo }}</p>
                       <p class="text-xs text-gray-400 dark:text-gray-500">Otorgado: {{ formatDate(prestamo.fecha_otorgamiento) }} | Cuotas: {{ prestamo.numero_cuotas }} | Tasa: {{ prestamo.tasa_interes }}%</p>
                     </div>
-                    <span class="text-lg font-semibold text-blue-600 dark:text-blue-400 mt-2 md:mt-0">${{ formatAmount(prestamo.monto) }}</span>
+                    <span class="text-base font-semibold text-blue-700 dark:text-blue-300 mt-2 md:mt-0">${{ formatAmount(prestamo.monto) }}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Gestión de Ahorros y Metas -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-8">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Ahorros y Metas</h2>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-12 border border-gray-200 dark:border-gray-700">
+            <div class="px-8 py-5 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
+                <span class="text-xl">🎯</span>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Ahorros y Metas</h2>
             </div>
-            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-4">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Metas de Ahorro</h3>
+                <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">Metas de Ahorro</h3>
                 <div class="flex justify-end mb-2">
-                  <button @click="openGoalModal" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm">
-                    Nueva Meta
+                  <button @click="openGoalModal" class="px-4 py-2 rounded-md border border-green-200 dark:border-green-700 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-200 hover:bg-green-100 dark:hover:bg-green-800 font-medium transition">
+                    <span class="mr-2">➕</span>Nueva Meta
                   </button>
                 </div>
                 <div v-if="Array.isArray(savingsGoals) && savingsGoals.length > 0" class="space-y-4">
-                  <div v-for="goal in savingsGoals" :key="goal._id" class="space-y-2">
+                  <div v-for="goal in savingsGoals" :key="goal._id" class="space-y-2 bg-gray-50 dark:bg-gray-700 rounded-lg p-4 shadow-sm hover:shadow transition">
                     <div class="flex justify-between items-center">
                       <h3 class="font-medium text-gray-900 dark:text-white">{{ goal.name || goal.nombre }}</h3>
-                      <span class="text-sm text-gray-600 dark:text-gray-400">{{ goal.targetDate || goal.fechaObjetivo }}</span>
+                      <span class="text-xs text-gray-600 dark:text-gray-400">{{ goal.targetDate || goal.fechaObjetivo }}</span>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-600">
                       <div
                         class="bg-green-600 h-2.5 rounded-full"
-                        :style="{ width: `${Math.min(((goal.currentAmount || goal.montoActual) / (goal.targetAmount || goal.montoObjetivo)) * 100, 100)}%` }"
+                        :style="{ width: ((goal.currentAmount || goal.montoActual || 0) / (goal.targetAmount || goal.montoObjetivo || 1) * 100) + '%' }"
                       ></div>
                     </div>
-                    <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                      <span>${{ formatAmount(goal.currentAmount || goal.montoActual) }}</span>
-                      <span>${{ formatAmount(goal.targetAmount || goal.montoObjetivo) }}</span>
+                    <div class="flex justify-between text-xs mt-1">
+                      <span class="text-green-700 dark:text-green-300">${{ formatAmount(goal.currentAmount || goal.montoActual || 0) }}</span>
+                      <span class="text-gray-500 dark:text-gray-400">Meta: ${{ formatAmount(goal.targetAmount || goal.montoObjetivo || 0) }}</span>
                     </div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ goal.description || goal.descripcion }}</div>
                   </div>
                 </div>
-                <div v-else class="text-center text-gray-500 dark:text-gray-400 py-4">
-                  No hay metas de ahorro configuradas.
-                </div>
+                <div v-else class="text-gray-500 dark:text-gray-400">No tienes metas de ahorro registradas</div>
                 </div>
                 <div class="space-y-4">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Presupuestos</h3>
+                <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">Presupuestos</h3>
                 <div class="flex justify-end mb-2">
-                  <button @click="openBudgetModal" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md text-sm">
-                    Nuevo Presupuesto
+                  <button @click="openBudgetModal" class="px-4 py-2 rounded-md border border-yellow-200 dark:border-yellow-700 bg-yellow-50 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-200 hover:bg-yellow-100 dark:hover:bg-yellow-800 font-medium transition">
+                    <span class="mr-2">➕</span>Nuevo Presupuesto
                   </button>
                 </div>
                 <div v-if="Array.isArray(budgets) && budgets.length > 0" class="space-y-4">
@@ -265,32 +280,49 @@
             </div>
 
             <!-- Últimas Transacciones -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Ultimos Movimientos</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Descripción</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Categoría</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Monto</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  <tr v-for="transaction in safeTransactions" :key="transaction._id">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ formatDate(transaction.date) }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ transaction.description }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ transaction.category }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm" :class="transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-                      {{ transaction.type === 'income' ? '+' : '-' }}${{ formatAmount(transaction.amount) }}
-                    </td>
-                    </tr>
-                </tbody>
-                </table>
-            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-12 border border-gray-200 dark:border-gray-700">
+              <div class="px-8 py-5 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
+                <span class="text-xl">💸</span>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Últimos Movimientos</h2>
+              </div>
+              <div class="p-8">
+                <div v-if="safeTransactions.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-8">
+                  No hay movimientos recientes.
+                </div>
+                <div v-else class="space-y-4">
+                  <div v-for="transaction in safeTransactions" :key="transaction._id"
+                    class="flex items-center gap-4 p-5 rounded-2xl shadow border border-gray-200 dark:border-gray-700 bg-gradient-to-r"
+                    :class="transaction.type === 'income' ? 'from-green-50 to-green-100 dark:from-green-900 dark:to-gray-800' : 'from-red-50 to-red-100 dark:from-red-900 dark:to-gray-800'"
+                    style="transition: box-shadow 0.2s;"
+                  >
+                    <div class="flex-shrink-0">
+                      <span class="text-3xl rounded-full p-3"
+                        :class="transaction.type === 'income' ? 'bg-green-200 dark:bg-green-800 text-green-700 dark:text-green-200' : 'bg-red-200 dark:bg-red-800 text-red-700 dark:text-red-200'"
+                      >
+                        {{ transaction.type === 'income' ? '💰' : '💸' }}
+                      </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex justify-between items-center">
+                        <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ transaction.description }}</span>
+                        <span class="text-xl font-bold"
+                          :class="transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
+                        >
+                          {{ transaction.type === 'income' ? '+' : '-' }}${{ formatAmount(transaction.amount) }}
+                        </span>
+                      </div>
+                      <div class="flex justify-between items-center mt-1 text-sm">
+                        <span class="text-gray-500 dark:text-gray-400">{{ formatDate(transaction.date) }}</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-medium"
+                          :class="transaction.type === 'income' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200'"
+                        >
+                          {{ transaction.category }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             </div>
         </div>
@@ -380,6 +412,7 @@ import AccountForm from '~/components/AccountForm.vue'
 import AccountOperationsModal from '~/components/AccountOperationsModal.vue'
 import DebtLoanDetailModal from '~/components/DebtLoanDetailModal.vue'
 import TransferForm from '~/components/TransferForm.vue'
+import { useRouter } from 'vue-router'
 
 // Estado de los modales
 const showTransactionModal = ref(false)
@@ -726,6 +759,9 @@ onMounted(async () => {
     isDarkMode.value = true
     document.documentElement.classList.add('dark')
   }
+
+  const router = useRouter()
+  router.replace('/login')
 })
 
 // Limpiar al desmontar
@@ -786,7 +822,7 @@ const formatDate = (dateString) => {
   })
 }
 
-// NUEVO: Funciones para el modal de detalles
+// Funciones para el modal de detalles
 const openDetailModal = (item, type) => {
   selectedItem.value = item
   selectedItemType.value = type
