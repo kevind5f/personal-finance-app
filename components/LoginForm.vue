@@ -101,6 +101,17 @@ const loading = ref(false)
 const error = ref('')
 
 const handleLogin = async () => {
+    error.value = ''
+    // Validación de email y contraseña
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!email.value || !emailRegex.test(email.value)) {
+        error.value = 'Ingresa un email válido.'
+        return
+    }
+    if (!password.value || password.value.length < 6) {
+        error.value = 'La contraseña debe tener al menos 6 caracteres.'
+        return
+    }
     try {
         loading.value = true
         error.value = ''

@@ -6,6 +6,19 @@
         <h2 class="text-xl font-bold text-gray-900 dark:text-white">Nuevo Presupuesto</h2>
       </div>
       <form @submit.prevent="handleSubmit" class="space-y-6 overflow-y-auto flex-1">
+        <div v-if="error" class="bg-red-100 text-red-700 rounded-md p-3 mb-2 text-sm">{{ error }}</div>
+        <div>
+          <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Título</label>
+          <input
+            id="title"
+            v-model="form.title"
+            type="text"
+            required
+            maxlength="60"
+            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base"
+            placeholder="Ej: Presupuesto Mensual Alimentación, Presupuesto Viaje, etc."
+          />
+        </div>
         <div>
           <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Categoría</label>
           <select
@@ -134,6 +147,7 @@ export default defineComponent({
   emits: ['close', 'submit'],
   setup(props, { emit }) {
     const form = ref({
+      title: '',
       category: '',
       type: '',
       paymentMethod: '',
@@ -143,8 +157,38 @@ export default defineComponent({
       description: '',
       spent: 0
     })
+    const error = ref('')
 
     const handleSubmit = () => {
+      error.value = ''
+      if (!form.value.title) {
+        error.value = 'Selecciona un título.'
+        return
+      }
+      if (!form.value.category) {
+        error.value = 'Selecciona una categoría.'
+        return
+      }
+      if (!form.value.type) {
+        error.value = 'Selecciona un tipo de presupuesto.'
+        return
+      }
+      if (!form.value.paymentMethod) {
+        error.value = 'Selecciona una forma de pago.'
+        return
+      }
+      if (!form.value.frequency) {
+        error.value = 'Selecciona la periodicidad.'
+        return
+      }
+      if (isNaN(form.value.amount) || form.value.amount <= 0) {
+        error.value = 'El monto debe ser mayor a 0.'
+        return
+      }
+      if (!form.value.month) {
+        error.value = 'Selecciona el mes.'
+        return
+      }
       emit('submit', { 
         ...form.value,
         totalBudget: form.value.amount,
@@ -155,6 +199,7 @@ export default defineComponent({
         initialBudget: form.value.amount
       })
       form.value = {
+        title: '',
         category: '',
         type: '',
         paymentMethod: '',
@@ -168,6 +213,7 @@ export default defineComponent({
 
     return {
       form,
+      error,
       handleSubmit
     }
   }

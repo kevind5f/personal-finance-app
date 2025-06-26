@@ -64,17 +64,27 @@
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Transacciones Recientes</h2>
           <div class="space-y-4">
-            <div v-for="transaction in recentTransactions" :key="transaction._id" class="flex justify-between items-center">
-              <div>
-                <h3 class="font-medium text-gray-900 dark:text-white">{{ transaction.description }}</h3>
-                <p class="text-gray-600 dark:text-gray-400">{{ transaction.category }}</p>
+            <div v-for="transaction in recentTransactions" :key="transaction._id"
+              class="flex items-center gap-4 p-5 rounded-2xl shadow border border-gray-200 dark:border-gray-700 bg-gradient-to-r"
+              :class="transaction.tipo === 'ingreso' ? 'from-green-50 to-green-100 dark:from-green-900 dark:to-gray-800' : 'from-red-50 to-red-100 dark:from-red-900 dark:to-gray-800'"
+              style="transition: box-shadow 0.2s;"
+            >
+              <div class="w-12 h-12 rounded-full flex items-center justify-center"
+                :class="transaction.tipo === 'ingreso' ? 'bg-green-200 dark:bg-green-900' : 'bg-red-200 dark:bg-red-900'">
+                <span class="text-2xl">
+                  {{ transaction.tipo === 'ingreso' ? '💰' : '💸' }}
+                </span>
               </div>
-              <span :class="[
-                'text-lg font-semibold',
-                transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-              ]">
-                {{ transaction.type === 'income' ? '+' : '-' }}${{ transaction.amount.toFixed(2) }}
-              </span>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-gray-900 dark:text-white truncate">{{ transaction.descripcion }}</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ transaction.categoria }}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-lg font-semibold" :class="transaction.tipo === 'ingreso' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                  {{ transaction.tipo === 'ingreso' ? '+' : '-' }}${{ Number(transaction.monto).toFixed(2) }}
+                </p>
+                <p class="text-xs text-gray-400 dark:text-gray-500">{{ transaction.fecha ? (new Date(transaction.fecha)).toLocaleDateString('es-ES') : '' }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -235,11 +245,11 @@ interface Account {
 
 interface Transaction {
   _id: string
-  description: string
-  amount: number
-  type: 'income' | 'expense'
-  category: string
-  date: string
+  descripcion: string
+  monto: number
+  tipo: 'ingreso' | 'gasto'
+  categoria: string
+  fecha: string
   accountId: string
 }
 
@@ -295,20 +305,20 @@ const totalBalance = computed(() => {
 const monthlyIncome = computed(() => {
   const currentMonth = new Date().toISOString().slice(0, 7)
   return recentTransactions.value
-    ?.filter(t => t.type === 'income' && t.date.startsWith(currentMonth))
-    .reduce((total, t) => total + (t.amount || 0), 0) || 0
+    ?.filter(t => t.tipo === 'ingreso' && t.fecha.startsWith(currentMonth))
+    .reduce((total, t) => total + (t.monto || 0), 0) || 0
 })
 
 const monthlyExpenses = computed(() => {
   const currentMonth = new Date().toISOString().slice(0, 7)
   return recentTransactions.value
-    ?.filter(t => t.type === 'expense' && t.date.startsWith(currentMonth))
-    .reduce((total, t) => total + (t.amount || 0), 0) || 0
+    ?.filter(t => t.tipo === 'gasto' && t.fecha.startsWith(currentMonth))
+    .reduce((total, t) => total + (t.monto || 0), 0) || 0
 })
 
 // Funciones para abrir formularios
-const openTransactionForm = (type: 'income' | 'expense') => {
-  isIncome.value = type === 'income'
+const openTransactionForm = (type: 'income' | 'expense' | 'ingreso' | 'gasto') => {
+  isIncome.value = type === 'income' || type === 'ingreso'
   showTransactionForm.value = true
 }
 

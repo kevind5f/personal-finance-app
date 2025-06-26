@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   try {
     // Obtener datos de la base de datos
     const cuentas = db.getCuentas()
-    const transacciones = db.getTransacciones()
+    const transacciones = db.getAllTransacciones()
     const metas = db.getMetas()
     const presupuestos = db.getPresupuestos()
 

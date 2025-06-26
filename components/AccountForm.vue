@@ -6,6 +6,7 @@
         <h2 class="text-xl font-bold text-gray-900 dark:text-white">Nueva Cuenta</h2>
       </div>
       <form @submit.prevent="handleSubmit" class="space-y-6">
+        <div v-if="error" class="bg-red-100 text-red-700 rounded-md p-3 mb-2 text-sm">{{ error }}</div>
         <div>
           <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nombre</label>
           <input
@@ -79,8 +80,22 @@ export default defineComponent({
       type: 'checking',
       balance: 0
     })
+    const error = ref('')
 
     const handleSubmit = () => {
+      error.value = ''
+      if (!form.value.name.trim()) {
+        error.value = 'El nombre de la cuenta es obligatorio.'
+        return
+      }
+      if (!['checking','savings','credit','investment'].includes(form.value.type)) {
+        error.value = 'Selecciona un tipo de cuenta válido.'
+        return
+      }
+      if (isNaN(form.value.balance) || form.value.balance < 0) {
+        error.value = 'El balance inicial debe ser un número mayor o igual a 0.'
+        return
+      }
       emit('submit', { ...form.value })
       form.value = {
         name: '',
@@ -91,6 +106,7 @@ export default defineComponent({
 
     return {
       form,
+      error,
       handleSubmit
     }
   }

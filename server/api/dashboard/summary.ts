@@ -4,7 +4,7 @@ import { db, type Cuenta, type Transaccion, type Meta, type Presupuesto } from '
 export default defineEventHandler(async (event) => {
   // Obtener datos de la base de datos
   const cuentas = db.getCuentas()
-  const transacciones = db.getTransacciones()
+  const transacciones = db.getAllTransacciones()
   const metas = db.getMetas()
   const presupuestos = db.getPresupuestos()
 

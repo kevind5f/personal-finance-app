@@ -83,14 +83,14 @@
                 <h2 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Mis Cuentas</h2>
             </div>
             <div class="p-8">
-              <div v-if="accounts.length === 0" class="text-center py-8">
+              <div v-if="availableAccounts.length === 0" class="text-center py-8">
                 <p class="text-gray-500 dark:text-gray-400">No hay cuentas disponibles</p>
                 <button @click="openAccountModal" class="px-5 py-2 rounded-md border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-800 font-medium transition mt-4">
                   Crear Primera Cuenta
                 </button>
               </div>
               <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div v-for="account in accounts" :key="account._id" 
+                <div v-for="account in availableAccounts" :key="account._id" 
                     class="bg-gray-50 dark:bg-gray-700 rounded-lg p-5 flex flex-col shadow-sm border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-400 transition cursor-pointer">
                     <div class="flex justify-between items-start">
                     <div>
@@ -104,12 +104,11 @@
                     </button>
                     </div>
                     <div class="mt-4">
-                    <p class="text-xl font-bold" :class="account.balance >= 0 ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'">
+                    <p class="text-xl font-bold text-green-700 dark:text-green-300">
                       ${{ formatAmount(account.balance) }}
                     </p>
-                    <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-semibold"
-                      :class="account.balance >= 0 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'">
-                      {{ account.balance >= 0 ? 'Disponible' : 'Deuda' }}
+                    <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                      Disponible
                     </span>
                     </div>
                 </div>
@@ -148,7 +147,8 @@
             </div>
 
             <!-- Manejo de Deudas -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-12 border border-gray-200 dark:border-gray-700">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-12 border border-gray-200 dark:border-gray-700"
+                 :style="`min-height: 180px; height: auto; max-height: ${Math.max(320, 80 * deudas.filter(d => d.estado !== 'finalizada').length)}px; overflow-y: auto;`">
               <div class="px-8 py-5 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
                 <span class="text-xl">📝</span>
                 <h2 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Mis Deudas</h2>
@@ -158,7 +158,8 @@
                   <p class="text-gray-500 dark:text-gray-400">No tienes deudas registradas</p>
                 </div>
                 <div v-else class="space-y-4">
-                  <div v-for="deuda in deudas" :key="deuda._id" @click="openDetailModal(deuda, 'deuda')" class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700 pb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors duration-200">
+                  <div v-for="deuda in deudas" :key="deuda._id" @click="openDetailModal(deuda, 'deuda')" class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700 pb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors duration-200"
+                       v-show="deuda.estado !== 'finalizada'">
                     <div class="flex-grow">
                       <h3 class="font-medium text-gray-900 dark:text-white flex items-center gap-2">💳 {{ deuda.nombre }}</h3>
                       <p class="text-gray-600 dark:text-gray-400">{{ deuda.motivo }}</p>
@@ -171,7 +172,8 @@
             </div>
 
             <!-- Manejo de Préstamos -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-12 border border-gray-200 dark:border-gray-700">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-12 border border-gray-200 dark:border-gray-700"
+                 :style="`min-height: 180px; height: auto; max-height: ${Math.max(320, 80 * prestamos.filter(p => p.estado !== 'finalizado').length)}px; overflow-y: auto;`">
               <div class="px-8 py-5 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
                 <span class="text-xl">🏦</span>
                 <h2 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Mis Préstamos</h2>
@@ -181,7 +183,8 @@
                   <p class="text-gray-500 dark:text-gray-400">No tienes préstamos registrados</p>
                 </div>
                 <div v-else class="space-y-4">
-                  <div v-for="prestamo in prestamos" :key="prestamo._id" @click="openDetailModal(prestamo, 'prestamo')" class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700 pb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors duration-200">
+                  <div v-for="prestamo in prestamos" :key="prestamo._id" @click="openDetailModal(prestamo, 'prestamo')" class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-200 dark:border-gray-700 pb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors duration-200"
+                       v-show="prestamo.estado !== 'finalizado'">
                     <div class="flex-grow">
                       <h3 class="font-medium text-gray-900 dark:text-white flex items-center gap-2">💳 {{ prestamo.nombre }}</h3>
                       <p class="text-gray-600 dark:text-gray-400">{{ prestamo.motivo }}</p>
@@ -292,31 +295,31 @@
                 <div v-else class="space-y-4">
                   <div v-for="transaction in safeTransactions" :key="transaction._id"
                     class="flex items-center gap-4 p-5 rounded-2xl shadow border border-gray-200 dark:border-gray-700 bg-gradient-to-r"
-                    :class="transaction.type === 'income' ? 'from-green-50 to-green-100 dark:from-green-900 dark:to-gray-800' : 'from-red-50 to-red-100 dark:from-red-900 dark:to-gray-800'"
+                    :class="transaction.tipo === 'ingreso' ? 'from-green-50 to-green-100 dark:from-green-900 dark:to-gray-800' : 'from-red-50 to-red-100 dark:from-red-900 dark:to-gray-800'"
                     style="transition: box-shadow 0.2s;"
                   >
                     <div class="flex-shrink-0">
                       <span class="text-3xl rounded-full p-3"
-                        :class="transaction.type === 'income' ? 'bg-green-200 dark:bg-green-800 text-green-700 dark:text-green-200' : 'bg-red-200 dark:bg-red-800 text-red-700 dark:text-red-200'"
+                        :class="transaction.tipo === 'ingreso' ? 'bg-green-200 dark:bg-green-800 text-green-700 dark:text-green-200' : 'bg-red-200 dark:bg-red-800 text-red-700 dark:text-red-200'"
                       >
-                        {{ transaction.type === 'income' ? '💰' : '💸' }}
+                        {{ transaction.tipo === 'ingreso' ? '💰' : '💸' }}
                       </span>
                     </div>
                     <div class="flex-1 min-w-0">
                       <div class="flex justify-between items-center">
-                        <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ transaction.description }}</span>
+                        <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ transaction.descripcion || 'Sin descripción' }}</span>
                         <span class="text-xl font-bold"
-                          :class="transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
+                          :class="transaction.tipo === 'ingreso' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
                         >
-                          {{ transaction.type === 'income' ? '+' : '-' }}${{ formatAmount(transaction.amount) }}
+                          {{ transaction.tipo === 'ingreso' ? '+' : '-' }}${{ formatAmount(transaction.monto) }}
                         </span>
                       </div>
                       <div class="flex justify-between items-center mt-1 text-sm">
-                        <span class="text-gray-500 dark:text-gray-400">{{ formatDate(transaction.date) }}</span>
+                        <span class="text-gray-500 dark:text-gray-400">{{ formatDate(transaction.fecha) }}</span>
                         <span class="px-3 py-1 rounded-full text-xs font-medium"
-                          :class="transaction.type === 'income' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200'"
+                          :class="transaction.tipo === 'ingreso' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200'"
                         >
-                          {{ transaction.category }}
+                          {{ transaction.categoria }}
                         </span>
                       </div>
                     </div>
@@ -460,6 +463,16 @@ const selectedItemType = ref('') // 'deuda' or 'prestamo'
 // Computed property para transacciones seguras
 const safeTransactions = computed(() => {
   return Array.isArray(transactions.value) ? transactions.value.slice(0, 10) : []
+})
+
+// Computed property para cuentas disponibles (excluye deudas y cuentas con saldo negativo)
+const availableAccounts = computed(() => {
+  return accounts.value.filter(account => {
+    // Incluir solo cuentas con saldo positivo o cuentas de tipo corriente/ahorro/efectivo/inversión
+    const positiveBalance = account.balance >= 0
+    const validAccountType = ['corriente', 'ahorro', 'efectivo', 'inversion'].includes(account.type)
+    return positiveBalance && validAccountType
+  })
 })
 
 // Función para cargar los datos del dashboard

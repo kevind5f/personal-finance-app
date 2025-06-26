@@ -12,7 +12,7 @@ const mapTransaccionToTransaction = (transaccion: any) => ({
   accountId: transaccion.cuentaId
 })
 
-// Función para mapear transacción de inglés a español
+// Función para mapear transacción de inglés a español (para POST/PUT)
 const mapTransactionToTransaccion = (transaction: any) => ({
   descripcion: transaction.description,
   monto: transaction.amount,
@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
     const accountId = consulta.accountId as string
     const limit = consulta.limit ? parseInt(consulta.limit as string) : undefined
     
-    let transacciones = db.getTransacciones()
+    let transacciones = db.getAllTransacciones()
     
     // Filtrar por cuenta si se especifica
     if (accountId) {
@@ -45,14 +45,15 @@ export default defineEventHandler(async (event) => {
       transacciones = transacciones.slice(0, limit)
     }
     
-    return transacciones.map(mapTransaccionToTransaction)
+    // Retornar con nombres de campos en español
+    return transacciones
   }
 
   if (metodo === 'POST') {
     const cuerpo = await readBody(event)
     const transaccionData = mapTransactionToTransaccion(cuerpo)
     const nuevaTransaccion = db.createTransaccion(transaccionData)
-    return mapTransaccionToTransaction(nuevaTransaccion)
+    return nuevaTransaccion
   }
 
   if (metodo === 'PUT') {
@@ -62,7 +63,7 @@ export default defineEventHandler(async (event) => {
     if (!transaccionActualizada) {
       return { error: 'Transacción no encontrada' }
     }
-    return mapTransaccionToTransaction(transaccionActualizada)
+    return transaccionActualizada
   }
 
   if (metodo === 'DELETE') {

@@ -11,6 +11,19 @@
         <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ isIncome ? 'Nuevo Ingreso' : 'Nuevo Gasto' }}</h2>
       </div>
       <form @submit.prevent="handleSubmit" class="space-y-6">
+        <div v-if="error" class="bg-red-100 text-red-700 rounded-md p-3 mb-2 text-sm">{{ error }}</div>
+        <div>
+          <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Título</label>
+          <input
+            id="title"
+            v-model="form.title"
+            type="text"
+            required
+            maxlength="60"
+            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base"
+            placeholder="Ej: Pago de alquiler, Venta de producto, etc."
+          />
+        </div>
         <div>
           <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Monto</label>
           <input
@@ -179,6 +192,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const accounts = ref<Account[]>([])
     const form = ref({
+      title: '',
       amount: 0,
       category: '',
       subcategory: '',
@@ -187,6 +201,7 @@ export default defineComponent({
       type: props.isIncome ? 'income' : 'expense'
     })
     const amountError = ref(false)
+    const error = ref('')
 
     // Selección de categorías según tipo
     const categories = computed(() => props.isIncome ? incomeCategories : expenseCategories)
@@ -217,22 +232,42 @@ export default defineComponent({
     })
 
     const handleSubmit = () => {
-      if (form.value.amount <= 0) {
-        amountError.value = true
+      error.value = ''
+      amountError.value = false
+      if (!form.value.title || !form.value.title.trim()) {
+        error.value = 'El título es obligatorio.'
         return
       }
-      // Si no hay subcategoría, no la envíes
-      const dataToSend = { ...form.value }
-      if (!subcategoriesForSelected.value.length) {
-        if ("subcategory" in dataToSend) dataToSend.subcategory = ''
+      if (isNaN(form.value.amount) || form.value.amount <= 0) {
+        amountError.value = true
+        error.value = 'El monto debe ser mayor a 0.'
+        return
       }
-      emit('submit', dataToSend)
+      if (!form.value.category) {
+        error.value = 'Selecciona una categoría.'
+        return
+      }
+      if (!form.value.accountId) {
+        error.value = 'Selecciona una cuenta.'
+        return
+      }
+      if (!form.value.date) {
+        error.value = 'Selecciona una fecha válida.'
+        return
+      }
+      if (subcategoriesForSelected.value.length && !form.value.subcategory) {
+        error.value = 'Selecciona una subcategoría.'
+        return
+      }
+      error.value = ''
+      emit('submit', { ...form.value })
       form.value = {
+        title: '',
         amount: 0,
         category: '',
         subcategory: '',
         date: new Date().toISOString().split('T')[0],
-        accountId: accounts.value.length > 0 ? accounts.value[0]._id : '',
+        accountId: '',
         type: props.isIncome ? 'income' : 'expense'
       }
     }
@@ -243,6 +278,7 @@ export default defineComponent({
       categories,
       subcategoriesForSelected,
       amountError,
+      error,
       handleSubmit
     }
   }

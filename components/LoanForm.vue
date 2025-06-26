@@ -23,6 +23,7 @@
 
       <!-- Form Content (Scrollable) -->
       <form @submit.prevent="handleSubmit" class="p-8 space-y-8 overflow-y-auto">
+        <div v-if="error" class="bg-red-100 text-red-700 rounded-md p-3 mb-2 text-sm">{{ error }}</div>
         <div class="mb-4 flex justify-end">
           <button type="button" @click="setDefaultInformal" class="px-4 py-2 text-base bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">Default informal</button>
         </div>
@@ -30,6 +31,10 @@
         <!-- Field Groups -->
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white border-b pb-2">Datos del Préstamo</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          <div class="md:col-span-2">
+            <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Título</label>
+            <input v-model="form.titulo" type="text" required maxlength="60" placeholder="Ej: Préstamo a Juan, Deuda Tarjeta Visa, etc." class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base" />
+          </div>
           <div>
             <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">Monto total prestado (capital)</label>
             <input v-model.number="form.monto" type="number" min="0.01" step="0.01" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base" />
@@ -178,6 +183,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const cuentas = ref<any[]>([])
     const form = ref({
+      titulo: '',
       nombre: '',
       monto: 0,
       moneda: 'USD',
@@ -199,6 +205,7 @@ export default defineComponent({
       cuenta_destino: ''
     })
     const amountError = ref(false)
+    const error = ref('')
 
     const loadAccounts = async () => {
       try {
@@ -230,15 +237,50 @@ export default defineComponent({
     })
 
     const handleSubmit = () => {
-      if (form.value.monto <= 0) {
-        amountError.value = true
+      error.value = ''
+      if (isNaN(form.value.monto) || form.value.monto <= 0) {
+        error.value = 'El monto debe ser mayor a 0.'
         return
       }
-      // Emit submit before resetting form to ensure the modal closes with data
+      if (!form.value.nombre || !form.value.nombre.trim()) {
+        error.value = 'El nombre es obligatorio.'
+        return
+      }
+      if (!form.value.fecha_otorgamiento) {
+        error.value = 'Selecciona la fecha de otorgamiento.'
+        return
+      }
+      if (!form.value.fecha_primer_pago) {
+        error.value = 'Selecciona la fecha de primer pago.'
+        return
+      }
+      if (!form.value.fecha_ultimo_pago) {
+        error.value = 'Selecciona la fecha de último pago.'
+        return
+      }
+      if (!form.value.plazo_total) {
+        error.value = 'El plazo total es obligatorio.'
+        return
+      }
+      if (!form.value.frecuencia_pago) {
+        error.value = 'Selecciona la frecuencia de pago.'
+        return
+      }
+      if (isNaN(form.value.numero_cuotas) || form.value.numero_cuotas < 1) {
+        error.value = 'El número de cuotas debe ser mayor a 0.'
+        return
+      }
+      if (isNaN(form.value.tasa_interes) || form.value.tasa_interes < 0) {
+        error.value = 'La tasa de interés no puede ser negativa.'
+        return
+      }
+      if (!form.value.cuenta_destino) {
+        error.value = 'Selecciona la cuenta destino.'
+        return
+      }
       emit('submit', { ...form.value })
-      
-      // Reset form
       form.value = {
+        titulo: '',
         nombre: '',
         monto: 0,
         moneda: 'USD',
@@ -257,7 +299,7 @@ export default defineComponent({
         incluye_intereses: true,
         permite_adelantos: false,
         forma_pago: 'efectivo',
-        cuenta_destino: cuentas.value.length > 0 ? cuentas.value[0].name : ''
+        cuenta_destino: ''
       }
     }
 
@@ -276,6 +318,7 @@ export default defineComponent({
       form,
       cuentas,
       amountError,
+      error,
       handleSubmit,
       setDefaultInformal
     }

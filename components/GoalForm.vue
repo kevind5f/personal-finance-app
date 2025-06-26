@@ -6,6 +6,7 @@
         <h2 class="text-xl font-bold text-gray-900 dark:text-white">Nueva Meta de Ahorro</h2>
       </div>
       <form @submit.prevent="handleSubmit" class="space-y-6 overflow-y-auto flex-1">
+        <div v-if="error" class="bg-red-100 text-red-700 rounded-md p-3 mb-2 text-sm">{{ error }}</div>
         <div>
           <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nombre</label>
           <input
@@ -114,6 +115,7 @@ export default defineComponent({
     })
     
     const accounts = ref<any[]>([])
+    const error = ref('')
 
     const loadAccounts = async () => {
       try {
@@ -138,6 +140,31 @@ export default defineComponent({
     }, { immediate: true })
 
     const handleSubmit = () => {
+      error.value = ''
+      if (!form.value.name.trim()) {
+        error.value = 'El nombre de la meta es obligatorio.'
+        return
+      }
+      if (isNaN(form.value.targetAmount) || form.value.targetAmount <= 0) {
+        error.value = 'El monto objetivo debe ser mayor a 0.'
+        return
+      }
+      if (isNaN(form.value.currentAmount) || form.value.currentAmount < 0) {
+        error.value = 'El monto actual no puede ser negativo.'
+        return
+      }
+      if (!form.value.targetDate) {
+        error.value = 'Selecciona una fecha objetivo.'
+        return
+      }
+      if (new Date(form.value.targetDate) < new Date()) {
+        error.value = 'La fecha objetivo debe ser futura.'
+        return
+      }
+      if (!form.value.accountId) {
+        error.value = 'Selecciona una cuenta de ahorro.'
+        return
+      }
       emit('submit', { ...form.value })
       form.value = {
         name: '',
@@ -152,6 +179,7 @@ export default defineComponent({
     return {
       form,
       accounts,
+      error,
       handleSubmit
     }
   }

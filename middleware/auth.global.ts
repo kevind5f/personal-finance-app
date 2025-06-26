@@ -1,4 +1,12 @@
-export default defineNuxtRouteMiddleware((to) => {
+import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app'
+import type { RouteLocationNormalized } from 'vue-router'
+
+export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
+  // Redirigir la raíz '/' a '/login'
+  if (to.path === '/') {
+    return navigateTo('/login')
+  }
+
   // Lista de rutas públicas
   const publicRoutes = ['/login', '/register', '/forgot-password', '/reset-password']
 

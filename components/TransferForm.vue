@@ -6,6 +6,7 @@
         <h2 class="text-xl font-bold text-gray-900 dark:text-white">Nueva Transferencia</h2>
       </div>
       <form @submit.prevent="handleSubmit" class="space-y-6">
+        <div v-if="error" class="bg-red-100 text-red-700 rounded-md p-3 mb-2 text-sm">{{ error }}</div>
         <div>
           <label for="fromAccount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cuenta Origen</label>
           <select id="fromAccount" v-model="form.fromAccountId" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white px-4 py-3 text-base">
@@ -64,6 +65,7 @@ const form = ref({
   description: '',
   date: today
 })
+const error = ref('')
 
 watch(() => props.isOpen, (val) => {
   if (val) {
@@ -78,7 +80,23 @@ watch(() => props.isOpen, (val) => {
 })
 
 function handleSubmit() {
-  if (form.value.fromAccountId === form.value.toAccountId) return
+  error.value = ''
+  if (!form.value.fromAccountId || !form.value.toAccountId) {
+    error.value = 'Selecciona ambas cuentas.'
+    return
+  }
+  if (form.value.fromAccountId === form.value.toAccountId) {
+    error.value = 'Las cuentas deben ser distintas.'
+    return
+  }
+  if (isNaN(form.value.amount) || form.value.amount <= 0) {
+    error.value = 'El monto debe ser mayor a 0.'
+    return
+  }
+  if (!form.value.date) {
+    error.value = 'Selecciona una fecha válida.'
+    return
+  }
   emit('submit', { ...form.value })
 }
 </script> 

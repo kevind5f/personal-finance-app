@@ -39,15 +39,15 @@
             Todas
           </button>
           <button
-            @click="filterType = 'income'"
-            :class="filterType === 'income' ? 'bg-green-600 text-white shadow' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'"
+            @click="filterType = 'ingreso'"
+            :class="filterType === 'ingreso' ? 'bg-green-600 text-white shadow' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'"
             class="px-4 py-2 rounded-lg text-base font-medium hover:bg-green-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
           >
             Ingresos
           </button>
           <button
-            @click="filterType = 'expense'"
-            :class="filterType === 'expense' ? 'bg-red-600 text-white shadow' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'"
+            @click="filterType = 'gasto'"
+            :class="filterType === 'gasto' ? 'bg-red-600 text-white shadow' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'"
             class="px-4 py-2 rounded-lg text-base font-medium hover:bg-red-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
           >
             Gastos
@@ -74,7 +74,7 @@
         <div v-else>
           <div v-if="filteredTransactions.length === 0" class="text-center py-8">
             <p class="text-gray-500 dark:text-gray-400">
-              {{ filterType === 'all' ? 'No hay operaciones en esta cuenta' : `No hay ${filterType === 'income' ? 'ingresos' : 'gastos'} en esta cuenta` }}
+              {{ filterType === 'all' ? 'No hay operaciones en esta cuenta' : `No hay ${filterType === 'ingreso' ? 'ingresos' : 'gastos'} en esta cuenta` }}
             </p>
           </div>
           <div v-else class="space-y-4">
@@ -82,21 +82,21 @@
                  class="flex items-center justify-between p-5 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shadow-sm">
               <div class="flex items-center space-x-4">
                 <div class="w-12 h-12 rounded-full flex items-center justify-center"
-                     :class="transaction.type === 'income' ? 'bg-green-200 dark:bg-green-900' : 'bg-red-200 dark:bg-red-900'">
+                     :class="(transaction.tipo ?? transaction.type) === 'ingreso' || (transaction.tipo ?? transaction.type) === 'income' ? 'bg-green-200 dark:bg-green-900' : 'bg-red-200 dark:bg-red-900'">
                   <span class="text-2xl">
-                    {{ transaction.type === 'income' ? '💰' : '💸' }}
+                    {{ (transaction.tipo ?? transaction.type) === 'ingreso' || (transaction.tipo ?? transaction.type) === 'income' ? '💰' : '💸' }}
                   </span>
                 </div>
                 <div>
-                  <p class="font-medium text-gray-900 dark:text-white">{{ transaction.description }}</p>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ transaction.category }}</p>
+                  <p class="font-medium text-gray-900 dark:text-white">{{ transaction.titulo ?? transaction.title ?? transaction.descripcion ?? transaction.description }}</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ transaction.categoria ?? transaction.category }}</p>
                 </div>
               </div>
               <div class="text-right">
-                <p class="text-lg font-semibold" :class="transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-                  {{ transaction.type === 'income' ? '+' : '-' }}${{ formatAmount(transaction.amount) }}
+                <p class="text-lg font-semibold" :class="(transaction.tipo ?? transaction.type) === 'ingreso' || (transaction.tipo ?? transaction.type) === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                  {{ (transaction.tipo ?? transaction.type) === 'ingreso' || (transaction.tipo ?? transaction.type) === 'income' ? '+' : '-' }}${{ formatAmount(transaction.monto ?? transaction.amount) }}
                 </p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(transaction.date) }}</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(transaction.fecha ?? transaction.date) }}</p>
               </div>
             </div>
           </div>
@@ -147,9 +147,14 @@ const filteredTransactions = computed(() => {
     t => t.accountId === props.account?._id
   )
   if (filterType.value !== 'all') {
-    txs = txs.filter(t => t.type === filterType.value)
+    txs = txs.filter(t => {
+      const tipo = t.tipo ?? t.type
+      if (filterType.value === 'ingreso') return tipo === 'ingreso' || tipo === 'income'
+      if (filterType.value === 'gasto') return tipo === 'gasto' || tipo === 'expense'
+      return true
+    })
   }
-  return txs.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)
+  return txs.slice().sort((a, b) => new Date((b.fecha ?? b.date)) - new Date((a.fecha ?? a.date))).slice(0, 5)
 })
 
 // Cargar transacciones de la cuenta
