@@ -1,7 +1,11 @@
 import { defineEventHandler } from 'h3'
-import { db } from '../database/db'
+import fs from 'fs'
+import path from 'path'
+
+const dbPath = path.join(process.cwd(), 'server', 'database', 'db.json')
 
 export default defineEventHandler(async (event) => {
-  // Devuelve el array de préstamos del archivo db.json
-  return db.getPrestamos ? db.getPrestamos() : []
+  const dbData = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+  const prestamos = dbData.clientes[0]?.prestamos || []
+  return prestamos
 }) 

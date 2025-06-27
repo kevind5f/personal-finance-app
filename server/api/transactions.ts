@@ -1,5 +1,9 @@
 import { defineEventHandler, getQuery, readBody } from 'h3'
 import { db } from '../database/db'
+import fs from 'fs'
+import path from 'path'
+
+const dbPath = path.join(process.cwd(), 'server', 'database', 'db.json')
 
 // Función para mapear transacción de español a inglés
 const mapTransaccionToTransaction = (transaccion: any) => ({
@@ -29,23 +33,24 @@ export default defineEventHandler(async (event) => {
     const consulta = getQuery(event)
     const accountId = consulta.accountId as string
     const limit = consulta.limit ? parseInt(consulta.limit as string) : undefined
-    
-    let transacciones = db.getAllTransacciones()
-    
+
+    let transacciones = []
+    const dbData = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+    transacciones = dbData.clientes[0]?.transacciones || []
+
     // Filtrar por cuenta si se especifica
     if (accountId) {
-      transacciones = transacciones.filter(t => t.cuentaId === accountId)
+      transacciones = transacciones.filter((t: any) => t.cuentaId === accountId)
     }
-    
+
     // Ordenar por fecha (más recientes primero)
-    transacciones.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
-    
+    transacciones.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+
     // Limitar resultados si se especifica
     if (limit) {
       transacciones = transacciones.slice(0, limit)
     }
-    
-    // Retornar con nombres de campos en español
+
     return transacciones
   }
 

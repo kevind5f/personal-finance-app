@@ -20,6 +20,12 @@
                 <span v-if="isDarkMode">☀️</span>
                 <span v-else>🌙</span>
                 </button>
+                <button @click="navigateTo('/gestores')" class="flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition">
+                  <span>⚙️</span> Gestores
+                </button>
+                <button @click="openProfileModal" class="flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition">
+                  <span>👤</span> Perfil
+                </button>
             <button @click="openReportModal" class="flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition">
               <span>📊</span> Reportes
             </button>
@@ -400,6 +406,12 @@
         @close="closeTransferModal"
         @submit="handleTransferSubmit"
       />
+
+      <ProfileModal
+        v-if="showProfileModal"
+        :is-open="showProfileModal"
+        @close="closeProfileModal"
+      />
     </ClientOnly>
     </div>
 </template>
@@ -415,6 +427,7 @@ import AccountForm from '~/components/AccountForm.vue'
 import AccountOperationsModal from '~/components/AccountOperationsModal.vue'
 import DebtLoanDetailModal from '~/components/DebtLoanDetailModal.vue'
 import TransferForm from '~/components/TransferForm.vue'
+import ProfileModal from '~/components/ProfileModal.vue'
 import { useRouter } from 'vue-router'
 
 // Estado de los modales
@@ -906,5 +919,15 @@ const handleTransferSubmit = async (transfer) => {
   } catch (error) {
     console.error('Error creando transferencia interna:', error)
   }
+}
+
+const showProfileModal = ref(false)
+
+const openProfileModal = () => {
+  showProfileModal.value = true
+}
+
+const closeProfileModal = () => {
+  showProfileModal.value = false
 }
 </script> 

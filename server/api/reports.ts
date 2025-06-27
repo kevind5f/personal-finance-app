@@ -1,22 +1,19 @@
 import { defineEventHandler } from 'h3'
-import { db } from '../database/db'
-import { join } from 'path'
+import fs from 'fs'
+import path from 'path'
+
+const dbPath = path.join(process.cwd(), 'server', 'database', 'db.json')
 
 export default defineEventHandler(async (event) => {
   try {
-    // Obtener datos de la base de datos
-    const cuentas = db.getCuentas()
-    const transacciones = db.getAllTransacciones()
-    const metas = db.getMetas()
-    const presupuestos = db.getPresupuestos()
-
-    // LOGS DE DEPURACIÓN
-    // Imprime la ruta real del archivo de base de datos
-    // @ts-ignore
-    console.log('DB PATH:', db.dbPath || 'No disponible')
-    console.log('Cuentas:', cuentas.length)
-    console.log('Transacciones:', transacciones.length)
-    console.log('Primeras transacciones:', JSON.stringify(transacciones.slice(0, 2), null, 2))
+    const dbData = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+    const cliente = dbData.clientes[0]
+    const cuentas = cliente.cuentas || []
+    const transacciones = cliente.transacciones || []
+    const metas = cliente.metas || []
+    const presupuestos = cliente.presupuestos || []
+    const deudasArr = cliente.deudas || []
+    const prestamosArr = cliente.prestamos || []
 
     // Procesar transacciones
     let totalIngresos = 0
@@ -26,7 +23,7 @@ export default defineEventHandler(async (event) => {
     const ingresosPorCategoria: Record<string, number> = {}
     const gastosPorCategoria: Record<string, number> = {}
 
-    transacciones.forEach(transaccion => {
+    transacciones.forEach((transaccion: any) => {
       const monto = Number(transaccion.monto)
       const fecha = new Date(transaccion.fecha)
       const mes = fecha.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' })
@@ -70,10 +67,10 @@ export default defineEventHandler(async (event) => {
     }
 
     // Analizar cuentas
-    const analisisCuentas = cuentas.map(cuenta => {
-      const transaccionesCuenta = transacciones.filter(t => t.cuentaId === cuenta._id)
+    const analisisCuentas = cuentas.map((cuenta: any) => {
+      const transaccionesCuenta = transacciones.filter((t: any) => t.cuentaId === cuenta._id)
       const ultimaTransaccion = transaccionesCuenta.length > 0 
-        ? transaccionesCuenta.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0].fecha
+        ? transaccionesCuenta.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0].fecha
         : null
 
       return {
@@ -87,15 +84,12 @@ export default defineEventHandler(async (event) => {
     })
 
     // Encontrar mayor deuda y préstamo usando los arrays de db.json
-    const deudasArr = db.getDeudas()
-    const prestamosArr = db.getPrestamos()
-
     const mayorDeuda = deudasArr.length > 0
-      ? deudasArr.reduce((max, deuda) => (Number(deuda.monto) > Number(max.monto) ? deuda : max), deudasArr[0])
+      ? deudasArr.reduce((max: any, deuda: any) => (Number(deuda.monto) > Number(max.monto) ? deuda : max), deudasArr[0])
       : null
 
     const mayorPrestamo = prestamosArr.length > 0
-      ? prestamosArr.reduce((max, prestamo) => (Number(prestamo.monto) > Number(max.monto) ? prestamo : max), prestamosArr[0])
+      ? prestamosArr.reduce((max: any, prestamo: any) => (Number(prestamo.monto) > Number(max.monto) ? prestamo : max), prestamosArr[0])
       : null
 
     // Calcular tendencias
@@ -135,17 +129,21 @@ export default defineEventHandler(async (event) => {
     }
 
     // Procesar metas de ahorro
-    const progresoAhorro = metas.reduce((suma, meta) => suma + meta.montoActual, 0)
-    const objetivoTotal = metas.reduce((suma, meta) => suma + meta.montoObjetivo, 0)
+    const progresoAhorro = metas.reduce((suma: number, meta: any) => suma + ((meta.monto_actual ?? meta.montoActual) || 0), 0)
+    const objetivoTotal = metas.reduce((suma: number, meta: any) => suma + ((meta.monto_objetivo ?? meta.montoObjetivo) || 0), 0)
     const porcentajeAhorro = objetivoTotal > 0 ? (progresoAhorro / objetivoTotal) * 100 : 0
 
     // Procesar presupuestos
-    const presupuestosActuales = presupuestos.filter(p => p.mes === new Date().toISOString().slice(0, 7))
-    const analisisPresupuestos = presupuestosActuales.map(p => ({
+    const presupuestosActuales = presupuestos.filter((p: any) => {
+      // Soportar tanto mes: 'Junio 2025' como mes: '2025-06'
+      const mesActual = new Date().toISOString().slice(0, 7)
+      return (p.mes && (p.mes === mesActual || p.mes.includes(mesActual)))
+    })
+    const analisisPresupuestos = presupuestosActuales.map((p: any) => ({
       categoria: p.categoria,
-      gastado: p.gastado,
-      total: p.monto,
-      progreso: (p.gastado / p.monto) * 100
+      gastado: p.gastado ?? p.monto_gastado,
+      total: p.monto ?? p.monto_total,
+      progreso: (p.monto ?? p.monto_total) > 0 ? ((p.gastado ?? p.monto_gastado) / (p.monto ?? p.monto_total)) * 100 : 0
     }))
 
     return {
@@ -189,8 +187,7 @@ export default defineEventHandler(async (event) => {
       savings_progress: porcentajeAhorro,
       budget_analysis: analisisPresupuestos
     }
-
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating report:', error)
     return {
       error: 'Error al generar el reporte',

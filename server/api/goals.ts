@@ -1,13 +1,15 @@
-import { defineEventHandler, getQuery, readBody } from 'h3'
+import { defineEventHandler } from 'h3'
+import fs from 'fs'
+import path from 'path'
 import { db } from '../database/db'
 
 // Función para mapear meta de español a inglés
 const mapMetaToGoal = (meta: any) => ({
   _id: meta._id,
   name: meta.nombre,
-  targetAmount: meta.montoObjetivo,
-  currentAmount: meta.montoActual,
-  deadline: meta.fechaObjetivo,
+  targetAmount: meta.monto_objetivo ?? meta.montoObjetivo,
+  currentAmount: meta.monto_actual ?? meta.montoActual,
+  deadline: meta.fecha_objetivo ?? meta.fechaObjetivo,
   description: meta.descripcion
 })
 
@@ -20,38 +22,10 @@ const mapGoalToMeta = (goal: any) => ({
   descripcion: goal.description
 })
 
+const dbPath = path.join(process.cwd(), 'server', 'database', 'db.json')
+
 export default defineEventHandler(async (event) => {
-  const metodo = event.method
-
-  if (metodo === 'GET') {
-    const metas = db.getMetas()
-    return metas.map(mapMetaToGoal)
-  }
-
-  if (metodo === 'POST') {
-    const cuerpo = await readBody(event)
-    const metaData = mapGoalToMeta(cuerpo)
-    const nuevaMeta = db.createMeta(metaData)
-    return mapMetaToGoal(nuevaMeta)
-  }
-
-  if (metodo === 'PUT') {
-    const cuerpo = await readBody(event)
-    const metaData = mapGoalToMeta(cuerpo)
-    const metaActualizada = db.updateMeta(cuerpo._id, metaData)
-    if (!metaActualizada) {
-      return { error: 'Meta no encontrada' }
-    }
-    return mapMetaToGoal(metaActualizada)
-  }
-
-  if (metodo === 'DELETE') {
-    const consulta = getQuery(event)
-    const id = consulta.id as string
-    const eliminada = db.deleteMeta(id)
-    if (!eliminada) {
-      return { error: 'Meta no encontrada' }
-    }
-    return { mensaje: 'Meta eliminada exitosamente' }
-  }
+  const dbData = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+  const metas = dbData.clientes[0]?.metas || []
+  return metas.map(mapMetaToGoal)
 }) 
