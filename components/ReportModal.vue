@@ -38,19 +38,19 @@
             <div class="bg-gradient-to-r from-green-400 to-green-600 rounded-2xl p-6 text-white flex flex-col items-start shadow-lg">
               <span class="text-3xl bg-white/30 dark:bg-white/10 rounded-full p-2 mb-2">💰</span>
               <h4 class="text-base font-medium opacity-90">Ingresos Totales</h4>
-              <p class="text-3xl font-bold mt-1">${{ formatAmount(reportData.totalIncome) }}</p>
+              <p class="text-3xl font-bold mt-1">{{ currencySymbol }} {{ formatAmount(reportData.totalIncome) }}</p>
               <p class="text-xs opacity-75 mt-1">{{ reportData.totalTransactions }} transacciones</p>
             </div>
             <div class="bg-gradient-to-r from-red-400 to-red-600 rounded-2xl p-6 text-white flex flex-col items-start shadow-lg">
               <span class="text-3xl bg-white/30 dark:bg-white/10 rounded-full p-2 mb-2">💸</span>
               <h4 class="text-base font-medium opacity-90">Gastos Totales</h4>
-              <p class="text-3xl font-bold mt-1">${{ formatAmount(reportData.totalExpenses) }}</p>
+              <p class="text-3xl font-bold mt-1">{{ currencySymbol }} {{ formatAmount(reportData.totalExpenses) }}</p>
               <p class="text-xs opacity-75 mt-1">{{ reportData.totalTransactions }} transacciones</p>
             </div>
             <div class="bg-gradient-to-r from-blue-400 to-blue-600 rounded-2xl p-6 text-white flex flex-col items-start shadow-lg">
               <span class="text-3xl bg-white/30 dark:bg-white/10 rounded-full p-2 mb-2">💼</span>
               <h4 class="text-base font-medium opacity-90">Balance Neto</h4>
-              <p class="text-3xl font-bold mt-1">${{ formatAmount(reportData.netBalance) }}</p>
+              <p class="text-3xl font-bold mt-1">{{ currencySymbol }} {{ formatAmount(reportData.netBalance) }}</p>
               <p class="text-xs opacity-75 mt-1">Diferencia total</p>
             </div>
             <div class="bg-gradient-to-r from-purple-400 to-purple-600 rounded-2xl p-6 text-white flex flex-col items-start shadow-lg">
@@ -78,7 +78,7 @@
                     </div>
                   </div>
                   <div class="w-20 text-right text-sm font-medium text-green-600 dark:text-green-400">
-                    ${{ formatAmount(amount) }}
+                    {{ currencySymbol }} {{ formatAmount(amount) }}
                   </div>
                 </div>
               </div>
@@ -99,7 +99,7 @@
                     </div>
                   </div>
                   <div class="w-20 text-right text-sm font-medium text-red-600 dark:text-red-400">
-                    ${{ formatAmount(amount) }}
+                    {{ currencySymbol }} {{ formatAmount(amount) }}
                   </div>
                 </div>
               </div>
@@ -123,7 +123,7 @@
                     </div>
                   </div>
                   <div class="w-20 text-right text-sm font-medium text-green-600 dark:text-green-400">
-                    ${{ formatAmount(amount) }}
+                    {{ currencySymbol }} {{ formatAmount(amount) }}
                   </div>
                 </div>
               </div>
@@ -144,7 +144,7 @@
                     </div>
                   </div>
                   <div class="w-20 text-right text-sm font-medium text-red-600 dark:text-red-400">
-                    ${{ formatAmount(amount) }}
+                    {{ currencySymbol }} {{ formatAmount(amount) }}
                   </div>
                 </div>
               </div>
@@ -156,30 +156,30 @@
             <div class="bg-white dark:bg-gray-700 rounded-lg shadow p-4">
               <h5 class="text-sm font-medium text-gray-600 dark:text-gray-400">Promedio Ingresos</h5>
               <div class="mt-2 space-y-1">
-                <p class="text-lg font-semibold text-green-600 dark:text-green-400">${{ formatAmount(reportData.averageIncome.monthly) }}/mes</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">${{ formatAmount(reportData.averageIncome.daily) }}/día</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">${{ formatAmount(reportData.averageIncome.yearly) }}/año</p>
+                <p class="text-lg font-semibold text-green-600 dark:text-green-400">{{ currencySymbol }} {{ formatAmount(reportData.averageIncome.monthly) }}/mes</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ currencySymbol }} {{ formatAmount(reportData.averageIncome.daily) }}/día</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ currencySymbol }} {{ formatAmount(reportData.averageIncome.yearly) }}/año</p>
               </div>
             </div>
             <div class="bg-white dark:bg-gray-700 rounded-lg shadow p-4">
               <h5 class="text-sm font-medium text-gray-600 dark:text-gray-400">Promedio Gastos</h5>
               <div class="mt-2 space-y-1">
-                <p class="text-lg font-semibold text-red-600 dark:text-red-400">${{ formatAmount(reportData.averageExpenses.monthly) }}/mes</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">${{ formatAmount(reportData.averageExpenses.daily) }}/día</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">${{ formatAmount(reportData.averageExpenses.yearly) }}/año</p>
+                <p class="text-lg font-semibold text-red-600 dark:text-red-400">{{ currencySymbol }} {{ formatAmount(reportData.averageExpenses.monthly) }}/mes</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ currencySymbol }} {{ formatAmount(reportData.averageExpenses.daily) }}/día</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ currencySymbol }} {{ formatAmount(reportData.averageExpenses.yearly) }}/año</p>
               </div>
             </div>
             <div class="bg-white dark:bg-gray-700 rounded-lg shadow p-4">
               <h5 class="text-sm font-medium text-gray-600 dark:text-gray-400">Mayor Deuda</h5>
               <div class="mt-2 space-y-1">
-                <p class="text-lg font-semibold text-red-600 dark:text-red-400">${{ formatAmount(reportData.largestDebt.amount) }}</p>
+                <p class="text-lg font-semibold text-red-600 dark:text-red-400">{{ currencySymbol }} {{ formatAmount(reportData.largestDebt.amount) }}</p>
                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ reportData.largestDebt.account }}</p>
               </div>
             </div>
             <div class="bg-white dark:bg-gray-700 rounded-lg shadow p-4">
               <h5 class="text-sm font-medium text-gray-600 dark:text-gray-400">Mayor Préstamo</h5>
               <div class="mt-2 space-y-1">
-                <p class="text-lg font-semibold text-blue-600 dark:text-blue-400">${{ formatAmount(reportData.largestLoan.amount) }}</p>
+                <p class="text-lg font-semibold text-blue-600 dark:text-blue-400">{{ currencySymbol }} {{ formatAmount(reportData.largestLoan.amount) }}</p>
                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ reportData.largestLoan.account }}</p>
               </div>
             </div>
@@ -195,7 +195,7 @@
                   <span class="text-sm text-gray-500 dark:text-gray-400">{{ account.type }}</span>
                 </div>
                 <p class="text-xl font-bold" :class="account.balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-                  ${{ formatAmount(account.balance) }}
+                  {{ currencySymbol }} {{ formatAmount(account.balance) }}
                 </p>
                 <div class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                   <p>{{ account.transactionCount }} transacciones</p>
@@ -242,7 +242,7 @@
 </template>
 
 <script setup>
-import { watch, onMounted } from 'vue'
+import { watch, onMounted, computed } from 'vue'
 
 console.log('ReportModal montado');
 
@@ -250,7 +250,8 @@ const props = defineProps({
   isOpen: {
     type: Boolean,
     default: false
-  }
+  },
+  currencyCode: { type: String, default: 'PEN' }
 })
 
 const emit = defineEmits(['close'])
@@ -278,6 +279,14 @@ const reportData = ref({
   accountAnalysis: [],
   incomeTrend: { icon: '📈', direction: 'up', percentage: 0, description: '' },
   expenseTrend: { icon: '📉', direction: 'down', percentage: 0, description: '' }
+})
+
+const currencySymbol = computed(() => {
+  switch (props.currencyCode) {
+    case 'USD': return '$';
+    case 'EUR': return '€';
+    case 'PEN': default: return 'S/';
+  }
 })
 
 // Función de utilidad para formatear montos

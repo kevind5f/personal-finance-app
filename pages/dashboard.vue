@@ -60,7 +60,7 @@
                 <div class="text-3xl text-green-800 dark:text-green-200 bg-green-400 dark:bg-green-700 bg-opacity-90 dark:bg-opacity-90 rounded-full p-3 flex items-center justify-center" style="min-width:3.5rem; min-height:3.5rem;">💵</div>
                 <div>
                 <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-1">Balance Total</h3>
-                <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ formatAmount(dashboardSummary.total_balance) }}</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ currencySymbol }}{{ formatAmount(dashboardSummary.total_balance) }}</p>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Balance actual de todas las cuentas</p>
                 </div>
             </div>
@@ -68,7 +68,7 @@
                 <div class="text-3xl text-blue-800 dark:text-blue-200 bg-blue-400 dark:bg-blue-700 bg-opacity-90 dark:bg-opacity-90 rounded-full p-3 flex items-center justify-center" style="min-width:3.5rem; min-height:3.5rem;">⬆️</div>
                 <div>
                 <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-1">Ingresos Mensuales</h3>
-                <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ formatAmount(dashboardSummary.monthly_income) }}</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ currencySymbol }}{{ formatAmount(dashboardSummary.monthly_income) }}</p>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Ingresos del mes actual</p>
                 </div>
             </div>
@@ -76,7 +76,7 @@
                 <div class="text-3xl text-red-800 dark:text-red-200 bg-red-400 dark:bg-red-700 bg-opacity-90 dark:bg-opacity-90 rounded-full p-3 flex items-center justify-center" style="min-width:3.5rem; min-height:3.5rem;">⬇️</div>
                 <div>
                 <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-1">Gastos Mensuales</h3>
-                <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ formatAmount(dashboardSummary.monthly_expenses) }}</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ currencySymbol }}{{ formatAmount(dashboardSummary.monthly_expenses) }}</p>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Gastos del mes actual</p>
                 </div>
             </div>
@@ -111,7 +111,7 @@
                     </div>
                     <div class="mt-4">
                     <p class="text-xl font-bold text-green-700 dark:text-green-300">
-                      ${{ formatAmount(account.balance) }}
+                      {{ currencySymbol }}{{ formatAmount(account.balance) }}
                     </p>
                     <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                       Disponible
@@ -171,7 +171,7 @@
                       <p class="text-gray-600 dark:text-gray-400">{{ deuda.motivo }}</p>
                       <p class="text-xs text-gray-400 dark:text-gray-500">Adquirida: {{ formatDate(deuda.fecha_adquisicion) }} | Cuotas: {{ deuda.numero_cuotas }} | Tasa: {{ deuda.tasa_interes }}%</p>
                     </div>
-                    <span class="text-base font-semibold text-red-700 dark:text-red-300 mt-2 md:mt-0">${{ formatAmount(deuda.monto) }}</span>
+                    <span class="text-base font-semibold text-red-700 dark:text-red-300 mt-2 md:mt-0">{{ currencySymbol }}{{ formatAmount(deuda.monto) }}</span>
                   </div>
                 </div>
               </div>
@@ -196,7 +196,7 @@
                       <p class="text-gray-600 dark:text-gray-400">{{ prestamo.motivo }}</p>
                       <p class="text-xs text-gray-400 dark:text-gray-500">Otorgado: {{ formatDate(prestamo.fecha_otorgamiento) }} | Cuotas: {{ prestamo.numero_cuotas }} | Tasa: {{ prestamo.tasa_interes }}%</p>
                     </div>
-                    <span class="text-base font-semibold text-blue-700 dark:text-blue-300 mt-2 md:mt-0">${{ formatAmount(prestamo.monto) }}</span>
+                    <span class="text-base font-semibold text-blue-700 dark:text-blue-300 mt-2 md:mt-0">{{ currencySymbol }}{{ formatAmount(prestamo.monto) }}</span>
                   </div>
                 </div>
               </div>
@@ -229,8 +229,8 @@
                       ></div>
                     </div>
                     <div class="flex justify-between text-xs mt-1">
-                      <span class="text-green-700 dark:text-green-300">${{ formatAmount(goal.currentAmount || goal.montoActual || 0) }}</span>
-                      <span class="text-gray-500 dark:text-gray-400">Meta: ${{ formatAmount(goal.targetAmount || goal.montoObjetivo || 0) }}</span>
+                      <span class="text-green-700 dark:text-green-300">{{ currencySymbol }}{{ formatAmount(goal.currentAmount || goal.montoActual || 0) }}</span>
+                      <span class="text-gray-500 dark:text-gray-400">Meta: {{ currencySymbol }}{{ formatAmount(goal.targetAmount || goal.montoObjetivo || 0) }}</span>
                     </div>
                   </div>
                 </div>
@@ -274,8 +274,8 @@
                     </div>
                     
                     <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                      <span>Gastado: ${{ formatAmount(budget.spentAmount) }}</span>
-                      <span>Presupuesto: ${{ formatAmount(budget.totalBudget) }}</span>
+                      <span>Gastado: {{ currencySymbol }}{{ formatAmount(budget.spentAmount) }}</span>
+                      <span>Presupuesto: {{ currencySymbol }}{{ formatAmount(budget.totalBudget) }}</span>
                     </div>
                     
                     <div class="text-xs text-gray-500 dark:text-gray-400">{{ budget.description }}</div>
@@ -301,31 +301,31 @@
                 <div v-else class="space-y-4">
                   <div v-for="transaction in safeTransactions" :key="transaction._id"
                     class="flex items-center gap-4 p-5 rounded-2xl shadow border border-gray-200 dark:border-gray-700 bg-gradient-to-r"
-                    :class="transaction.tipo === 'ingreso' ? 'from-green-50 to-green-100 dark:from-green-900 dark:to-gray-800' : 'from-red-50 to-red-100 dark:from-red-900 dark:to-gray-800'"
+                    :class="(transaction.tipo ?? transaction.type) === 'ingreso' || (transaction.tipo ?? transaction.type) === 'income' ? 'from-green-50 to-green-100 dark:from-green-900 dark:to-gray-800' : 'from-red-50 to-red-100 dark:from-red-900 dark:to-gray-800'"
                     style="transition: box-shadow 0.2s;"
                   >
                     <div class="flex-shrink-0">
                       <span class="text-3xl rounded-full p-3"
-                        :class="transaction.tipo === 'ingreso' ? 'bg-green-200 dark:bg-green-800 text-green-700 dark:text-green-200' : 'bg-red-200 dark:bg-red-800 text-red-700 dark:text-red-200'"
+                        :class="(transaction.tipo ?? transaction.type) === 'ingreso' || (transaction.tipo ?? transaction.type) === 'income' ? 'bg-green-200 dark:bg-green-800 text-green-700 dark:text-green-200' : 'bg-red-200 dark:bg-red-800 text-red-700 dark:text-red-200'"
                       >
-                        {{ transaction.tipo === 'ingreso' ? '💰' : '💸' }}
+                        {{ (transaction.tipo ?? transaction.type) === 'ingreso' || (transaction.tipo ?? transaction.type) === 'income' ? '💰' : '💸' }}
                       </span>
                     </div>
                     <div class="flex-1 min-w-0">
                       <div class="flex justify-between items-center">
-                        <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ transaction.descripcion || 'Sin descripción' }}</span>
+                        <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ transaction.descripcion ?? transaction.description ?? transaction.title ?? 'Sin descripción' }}</span>
                         <span class="text-xl font-bold"
-                          :class="transaction.tipo === 'ingreso' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
+                          :class="(transaction.tipo ?? transaction.type) === 'ingreso' || (transaction.tipo ?? transaction.type) === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
                         >
-                          {{ transaction.tipo === 'ingreso' ? '+' : '-' }}${{ formatAmount(transaction.monto) }}
+                          {{ (transaction.tipo ?? transaction.type) === 'ingreso' || (transaction.tipo ?? transaction.type) === 'income' ? '+' : '-' }}{{ currencySymbol }}{{ formatAmount(transaction.monto ?? transaction.amount) }}
                         </span>
                       </div>
                       <div class="flex justify-between items-center mt-1 text-sm">
-                        <span class="text-gray-500 dark:text-gray-400">{{ formatDate(transaction.fecha) }}</span>
+                        <span class="text-gray-500 dark:text-gray-400">{{ formatDate(transaction.fecha ?? transaction.date) }}</span>
                         <span class="px-3 py-1 rounded-full text-xs font-medium"
-                          :class="transaction.tipo === 'ingreso' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200'"
+                          :class="(transaction.tipo ?? transaction.type) === 'ingreso' || (transaction.tipo ?? transaction.type) === 'income' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200'"
                         >
-                          {{ transaction.categoria }}
+                          {{ transaction.categoria ?? transaction.category }}
                         </span>
                       </div>
                     </div>
@@ -633,17 +633,23 @@ const closeAccountOperationsModal = () => {
 // Funciones para manejar los formularios
 const handleTransactionSubmit = async (transaction) => {
   try {
+    const mapped = {
+      description: transaction.title, // Mapeo correcto
+      amount: transaction.amount,
+      category: transaction.category,
+      subcategory: transaction.subcategory,
+      date: transaction.date,
+      accountId: transaction.accountId,
+      type: transaction.type
+    }
     const response = await fetch('http://localhost:3000/api/transactions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(transaction)
+      body: JSON.stringify(mapped)
     })
-    
     if (response.ok) {
-      const newTransaction = await response.json()
-      transactions.value.unshift(newTransaction)
       await loadDashboardData() // Recargar datos para actualizar balances
       closeTransactionModal()
     }
@@ -786,8 +792,11 @@ onMounted(async () => {
     document.documentElement.classList.add('dark')
   }
 
-  const router = useRouter()
-  router.replace('/login')
+  try {
+    const res = await fetch('/api/clientes')
+    const data = await res.json()
+    currencyCode.value = data?.configuraciones?.moneda_principal || 'PEN'
+  } catch {}
 })
 
 // Limpiar al desmontar
@@ -816,6 +825,7 @@ const toggleTheme = () => {
 
 const handleLogout = () => {
   localStorage.removeItem('auth_token')
+  localStorage.removeItem('cliente')
   navigateTo('/login')
 }
 
@@ -861,19 +871,32 @@ const closeDetailModal = () => {
   selectedItemType.value = ''
 }
 
-const handlePayment = (payment) => {
-  const list = selectedItemType.value === 'deuda' ? deudas.value : prestamos.value
-  const item = list.find(i => i._id === payment.itemId)
-  if (item) {
-    if (!item.payments) {
-      item.payments = []
+const handlePayment = async (payment) => {
+  try {
+    const endpoint = selectedItemType.value === 'deuda' ? 'deudas' : 'prestamos'
+    const idParam = selectedItemType.value === 'deuda' ? 'deudaId' : 'prestamoId'
+    
+    const response = await fetch(`http://localhost:3000/api/${endpoint}?${idParam}=${payment.itemId}&accion=addPayment`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        amount: payment.amount,
+        date: payment.date
+      })
+    })
+
+    if (response.ok) {
+      // Recargar los datos para mostrar el pago actualizado
+      await loadDashboardData()
+      closeDetailModal()
+    } else {
+      console.error('Error al registrar el pago')
     }
-    // Agregamos el pago al principio del array para que aparezca primero
-    item.payments.unshift({ amount: payment.amount, date: payment.date })
+  } catch (error) {
+    console.error('Error al registrar el pago:', error)
   }
-  // En una aplicación real, aquí llamarías a un endpoint para guardar el pago:
-  // await fetch(`/api/${selectedItemType.value}s/${payment.itemId}/payments`, { ... })
-  console.log('Pago registrado (solo en frontend):', payment)
 }
 
 const showTransferModal = ref(false)
@@ -930,4 +953,13 @@ const openProfileModal = () => {
 const closeProfileModal = () => {
   showProfileModal.value = false
 }
+
+const currencyCode = ref('PEN')
+const currencySymbol = computed(() => {
+  switch (currencyCode.value) {
+    case 'USD': return '$';
+    case 'EUR': return '€';
+    case 'PEN': default: return 'S/';
+  }
+})
 </script> 

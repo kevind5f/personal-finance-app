@@ -30,12 +30,6 @@
           "saldo": 200
         },
         {
-          "_id": "4",
-          "nombre": "Tarjeta de Crédito",
-          "tipo": "credito",
-          "saldo": -3500
-        },
-        {
           "_id": "5",
           "nombre": "Préstamo Personal",
           "tipo": "prestamo",
@@ -449,6 +443,24 @@
           "descripcion": "Pago Tarjeta Crédito Junio",
           "fecha": "2025-06-30",
           "cuentaId": "4"
+        },
+        {
+          "_id": "6",
+          "descripcion": "Ingreso 1",
+          "monto": 5000,
+          "tipo": "ingreso",
+          "categoria": "Salario",
+          "fecha": "2025-07-11",
+          "cuentaId": "1"
+        },
+        {
+          "_id": "7",
+          "descripcion": "Gasto 1",
+          "monto": 5000,
+          "tipo": "gasto",
+          "categoria": "Compras",
+          "fecha": "2025-07-11",
+          "cuentaId": "1"
         }
       ],
       "metas": [
@@ -480,27 +492,51 @@
       "presupuestos": [
         {
           "_id": "1",
+          "name": "Alimentación Junio",
           "categoria": "Alimentación",
           "monto_total": 800,
           "monto_gastado": 510,
-          "mes": "Junio 2025",
-          "descripcion": "Presupuesto mensual para comida"
+          "mes": "2025-06",
+          "descripcion": "Presupuesto mensual para comida",
+          "tipo": "mensual",
+          "formaPago": "efectivo",
+          "periodicidad": "mensual",
+          "presupuestoInicial": 800,
+          "fechaCreacion": "2025-06-01",
+          "fechaActualizacion": "2025-06-01",
+          "activo": true
         },
         {
           "_id": "2",
+          "name": "Transporte Junio",
           "categoria": "Transporte",
           "monto_total": 300,
           "monto_gastado": 130,
-          "mes": "Junio 2025",
-          "descripcion": "Gasolina y transporte público"
+          "mes": "2025-06",
+          "descripcion": "Gasolina y transporte público",
+          "tipo": "mensual",
+          "formaPago": "efectivo",
+          "periodicidad": "mensual",
+          "presupuestoInicial": 300,
+          "fechaCreacion": "2025-06-01",
+          "fechaActualizacion": "2025-06-01",
+          "activo": true
         },
         {
           "_id": "3",
+          "name": "Entretenimiento Junio",
           "categoria": "Entretenimiento",
           "monto_total": 200,
           "monto_gastado": 45,
-          "mes": "Junio 2025",
-          "descripcion": "Cine, restaurantes y actividades"
+          "mes": "2025-06",
+          "descripcion": "Cine, restaurantes y actividades",
+          "tipo": "mensual",
+          "formaPago": "efectivo",
+          "periodicidad": "mensual",
+          "presupuestoInicial": 200,
+          "fechaCreacion": "2025-06-01",
+          "fechaActualizacion": "2025-06-01",
+          "activo": true
         }
       ],
       "prestamos": [
@@ -522,6 +558,7 @@
           "interes_moratorio": 2,
           "valor_cuota": 665,
           "incluye_intereses": true,
+          "permite_adelantos": false,
           "forma_pago": "transferencia",
           "cuenta_origen": "Cuenta Principal",
           "estado": "activo",
@@ -554,6 +591,7 @@
           "interes_moratorio": 3,
           "valor_cuota": 725,
           "incluye_intereses": true,
+          "permite_adelantos": false,
           "forma_pago": "transferencia",
           "cuenta_origen": "Cuenta Principal",
           "estado": "activo",
@@ -588,6 +626,7 @@
           "interes_moratorio": 2,
           "valor_cuota": 520,
           "incluye_intereses": true,
+          "permite_adelantos": false,
           "forma_pago": "transferencia",
           "cuenta_origen": "Cuenta Principal",
           "estado": "activa",
@@ -620,6 +659,7 @@
           "interes_moratorio": 1,
           "valor_cuota": 310,
           "incluye_intereses": true,
+          "permite_adelantos": false,
           "forma_pago": "transferencia",
           "cuenta_origen": "Cuenta Principal",
           "estado": "activa",
@@ -636,7 +676,7 @@
         }
       ],
       "configuraciones": {
-        "moneda_principal": "USD",
+        "moneda_principal": "PEN",
         "idioma": "español",
         "tema": "dark",
         "notificaciones": true,

@@ -54,7 +54,7 @@
               </div>
               <div class="flex items-center space-x-2">
                 <span class="text-lg font-semibold" :class="account.balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-                  ${{ formatAmount(account.balance) }}
+                  {{ currencySymbol }}{{ formatAmount(account.balance) }}
                 </span>
                 <button 
                   @click="deleteAccount(account)" 
@@ -260,6 +260,7 @@ import ReportModal from '~/components/ReportModal.vue'
 import AccountForm from '~/components/AccountForm.vue'
 import SubcategoryModal from '~/components/SubcategoryModal.vue'
 import CategoryModal from '~/components/CategoryModal.vue'
+import { ref, onMounted, computed } from 'vue'
 
 // Estado de carga y error
 const isLoading = ref(true)
@@ -625,5 +626,18 @@ const handleReportGenerate = (reportConfig) => {
 // Cargar datos al montar el componente
 onMounted(async () => {
   await loadAccounts()
+  const currencyCode = ref('PEN')
+  const currencySymbol = computed(() => {
+    switch (currencyCode.value) {
+      case 'USD': return '$';
+      case 'EUR': return '€';
+      case 'PEN': default: return 'S/';
+    }
+  })
+  try {
+    const res = await fetch('/api/clientes')
+    const data = await res.json()
+    currencyCode.value = data?.configuraciones?.moneda_principal || 'PEN'
+  } catch {}
 })
 </script> 

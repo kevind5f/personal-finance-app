@@ -39,7 +39,7 @@
                 </div>
                 <div class="flex justify-between">
                   <span class="text-sm text-gray-600 dark:text-gray-400">Total adeudado:</span>
-                  <span class="font-semibold text-red-600 dark:text-red-400">${{ formatAmount(totalDebtAmount) }}</span>
+                  <span class="font-semibold text-red-600 dark:text-red-400">{{ currencySymbol }}{{ formatAmount(totalDebtAmount) }}</span>
                 </div>
               </div>
             </div>
@@ -148,10 +148,10 @@
                   </div>
                   <div class="text-right">
                     <p class="text-lg font-semibold text-red-600 dark:text-red-400">
-                      ${{ formatAmount(deuda.monto) }}
+                      {{ currencySymbol }}{{ formatAmount(deuda.monto) }}
                     </p>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                      Cuota: ${{ formatAmount(deuda.valor_cuota) }}
+                      Cuota: {{ currencySymbol }}{{ formatAmount(deuda.valor_cuota) }}
                     </p>
                     <div class="flex items-center gap-2 mt-2">
                       <button @click.stop="editDebt(deuda)" 
@@ -196,7 +196,8 @@ const props = defineProps({
   deudas: {
     type: Array,
     default: () => []
-  }
+  },
+  currencyCode: { type: String, default: 'PEN' }
 })
 
 const emit = defineEmits(['close', 'refresh'])
@@ -233,6 +234,14 @@ const totalDebtAmount = computed(() => {
   return props.deudas
     .filter(d => d.estado === 'activa')
     .reduce((sum, d) => sum + (d.monto || 0), 0)
+})
+
+const currencySymbol = computed(() => {
+  switch (props.currencyCode) {
+    case 'USD': return '$';
+    case 'EUR': return '€';
+    case 'PEN': default: return 'S/';
+  }
 })
 
 const filteredDebts = computed(() => {
@@ -294,7 +303,7 @@ const selectDebt = (deuda) => {
 }
 
 const editDebt = (deuda) => {
-  if (confirm(`¿Estás seguro de que quieres editar la deuda "${deuda.nombre}"?\n\nMonto: $${formatAmount(deuda.monto)}\nMotivo: ${deuda.motivo}\nEstado: ${deuda.estado}\nCuotas: ${deuda.numero_cuotas}`)) {
+  if (confirm(`¿Estás seguro de que quieres editar la deuda "${deuda.nombre}"?\n\nMonto: {{ currencySymbol }}{{ formatAmount(deuda.monto) }}\nMotivo: ${deuda.motivo}\nEstado: ${deuda.estado}\nCuotas: ${deuda.numero_cuotas}`)) {
     selectedItem.value = { ...deuda }
     showEditModal.value = true
   }
@@ -332,7 +341,7 @@ const handleSaveEdit = async (updatedData) => {
 const deleteDebt = async (debtId) => {
   const deuda = props.deudas.find(d => d._id === debtId)
   if (deuda) {
-    const warningMessage = `⚠️ ADVERTENCIA ⚠️\n\n¿Estás seguro de que quieres ELIMINAR esta deuda?\n\n📝 Nombre: ${deuda.nombre}\n💰 Monto: $${formatAmount(deuda.monto)}\n📋 Motivo: ${deuda.motivo}\n📊 Estado: ${deuda.estado}\n📅 Fecha de adquisición: ${formatDate(deuda.fecha_adquisicion)}\n🔢 Número de cuotas: ${deuda.numero_cuotas}\n💳 Valor de cuota: $${formatAmount(deuda.valor_cuota)}\n\n❌ Esta acción NO se puede deshacer y eliminará permanentemente el registro.`
+    const warningMessage = `⚠️ ADVERTENCIA ⚠️\n\n¿Estás seguro de que quieres ELIMINAR esta deuda?\n\n📝 Nombre: ${deuda.nombre}\n�� Monto: {{ currencySymbol }}{{ formatAmount(deuda.monto) }}\n📋 Motivo: ${deuda.motivo}\n📊 Estado: ${deuda.estado}\n📅 Fecha de adquisición: ${formatDate(deuda.fecha_adquisicion)}\n🔢 Número de cuotas: ${deuda.numero_cuotas}\n💳 Valor de cuota: {{ currencySymbol }}{{ formatAmount(deuda.valor_cuota) }}\n\n❌ Esta acción NO se puede deshacer y eliminará permanentemente el registro.`
     
     if (confirm(warningMessage)) {
       try {

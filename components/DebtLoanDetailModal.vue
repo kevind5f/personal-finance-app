@@ -100,10 +100,10 @@
                   </div>
                   <div>
                     <p class="font-semibold text-gray-800 dark:text-gray-200">Pago Recibido</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(payment.date) }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(payment.fecha ?? payment.date) }}</p>
                   </div>
                 </div>
-                <p class="font-bold text-lg text-green-600 dark:text-green-400">${{ formatAmount(payment.amount) }}</p>
+                <p class="font-bold text-lg text-green-600 dark:text-green-400">${{ formatAmount(payment.monto ?? payment.amount) }}</p>
               </li>
             </ul>
           </div>
@@ -144,7 +144,10 @@ const formatDate = (dateString) => {
 
 const totalPaid = computed(() => {
   if (!props.item?.payments) return 0;
-  return props.item.payments.reduce((sum, payment) => sum + Number(payment.amount), 0);
+  return props.item.payments.reduce((sum, payment) => {
+    const amount = payment.monto ?? payment.amount ?? 0;
+    return sum + Number(amount);
+  }, 0);
 });
 
 const remainingBalance = computed(() => {

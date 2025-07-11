@@ -131,29 +131,29 @@
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-full flex items-center justify-center"
-                         :class="meta.montoActual >= meta.montoObjetivo ? 'bg-green-200 dark:bg-green-900' : 'bg-yellow-200 dark:bg-yellow-900'">
+                         :class="meta.currentAmount >= meta.targetAmount ? 'bg-green-200 dark:bg-green-900' : 'bg-yellow-200 dark:bg-yellow-900'">
                       <span class="text-xl">
-                        {{ meta.montoActual >= meta.montoObjetivo ? '🎉' : '🎯' }}
+                        {{ meta.currentAmount >= meta.targetAmount ? '🎉' : '🎯' }}
                       </span>
                     </div>
                     <div>
-                      <h5 class="font-medium text-gray-900 dark:text-white">{{ meta.nombre }}</h5>
-                      <p class="text-sm text-gray-600 dark:text-gray-400">{{ meta.categoria }}</p>
+                      <h5 class="font-medium text-gray-900 dark:text-white">{{ meta.name }}</h5>
+                      <p class="text-sm text-gray-600 dark:text-gray-400">{{ meta.category }}</p>
                       <p class="text-xs text-gray-500 dark:text-gray-500">
-                        Fecha objetivo: {{ formatDate(meta.fechaObjetivo) }}
+                        Fecha objetivo: {{ formatDate(meta.deadline) }}
                       </p>
                     </div>
                   </div>
                   <div class="text-right">
                     <p class="text-lg font-semibold text-yellow-600 dark:text-yellow-400">
-                      ${{ formatAmount(meta.montoActual) }} / ${{ formatAmount(meta.montoObjetivo) }}
+                      {{ currencySymbol }} {{ formatAmount(meta.currentAmount) }} / {{ currencySymbol }} {{ formatAmount(meta.targetAmount) }}
                     </p>
                     <div class="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
                       <div class="bg-yellow-500 h-2 rounded-full" 
-                           :style="{ width: `${Math.min((meta.montoActual / meta.montoObjetivo) * 100, 100)}%` }"></div>
+                           :style="{ width: `${Math.min((meta.currentAmount / meta.targetAmount) * 100, 100)}%` }"></div>
                     </div>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {{ Math.round((meta.montoActual / meta.montoObjetivo) * 100) }}% completado
+                      {{ Math.round((meta.currentAmount / meta.targetAmount) * 100) }}% completado
                     </p>
                     <div class="flex items-center gap-2 mt-2">
                       <button @click.stop="editGoal(meta)" 
@@ -198,7 +198,8 @@ const props = defineProps({
   metas: {
     type: Array,
     default: () => []
-  }
+  },
+  currencyCode: { type: String, default: 'PEN' }
 })
 
 const emit = defineEmits(['close', 'refresh'])
@@ -219,22 +220,22 @@ const selectedItem = ref(null)
 
 // Computed properties
 const categories = computed(() => {
-  const cats = new Set(props.metas.map(m => m.categoria))
+  const cats = new Set(props.metas.map(m => m.category))
   return Array.from(cats).sort()
 })
 
 const activeGoals = computed(() => {
-  return props.metas.filter(m => m.montoActual < m.montoObjetivo).length
+  return props.metas.filter(m => m.currentAmount < m.targetAmount).length
 })
 
 const completedGoals = computed(() => {
-  return props.metas.filter(m => m.montoActual >= m.montoObjetivo).length
+  return props.metas.filter(m => m.currentAmount >= m.targetAmount).length
 })
 
 const goalsProgress = computed(() => {
   if (props.metas.length === 0) return 0
-  const totalCurrent = props.metas.reduce((sum, m) => sum + (m.montoActual || 0), 0)
-  const totalTarget = props.metas.reduce((sum, m) => sum + (m.montoObjetivo || 0), 0)
+  const totalCurrent = props.metas.reduce((sum, m) => sum + (m.currentAmount || 0), 0)
+  const totalTarget = props.metas.reduce((sum, m) => sum + (m.targetAmount || 0), 0)
   return totalTarget > 0 ? Math.round((totalCurrent / totalTarget) * 100) : 0
 })
 
@@ -244,39 +245,47 @@ const filteredGoals = computed(() => {
   // Filtrar por estado
   if (filters.value.status) {
     if (filters.value.status === 'activa') {
-      filtered = filtered.filter(m => m.montoActual < m.montoObjetivo)
+      filtered = filtered.filter(m => m.currentAmount < m.targetAmount)
     } else if (filters.value.status === 'completada') {
-      filtered = filtered.filter(m => m.montoActual >= m.montoObjetivo)
+      filtered = filtered.filter(m => m.currentAmount >= m.targetAmount)
     }
   }
 
   // Filtrar por categoría
   if (filters.value.category) {
-    filtered = filtered.filter(m => m.categoria === filters.value.category)
+    filtered = filtered.filter(m => m.category === filters.value.category)
   }
 
   // Filtrar por fecha desde
   if (filters.value.dateFrom) {
-    filtered = filtered.filter(m => m.fechaObjetivo >= filters.value.dateFrom)
+    filtered = filtered.filter(m => m.deadline >= filters.value.dateFrom)
   }
 
   // Filtrar por fecha hasta
   if (filters.value.dateTo) {
-    filtered = filtered.filter(m => m.fechaObjetivo <= filters.value.dateTo)
+    filtered = filtered.filter(m => m.deadline <= filters.value.dateTo)
   }
 
   // Filtrar por monto objetivo mínimo
   if (filters.value.minTarget) {
-    filtered = filtered.filter(m => m.montoObjetivo >= Number(filters.value.minTarget))
+    filtered = filtered.filter(m => m.targetAmount >= Number(filters.value.minTarget))
   }
 
   // Filtrar por monto objetivo máximo
   if (filters.value.maxTarget) {
-    filtered = filtered.filter(m => m.montoObjetivo <= Number(filters.value.maxTarget))
+    filtered = filtered.filter(m => m.targetAmount <= Number(filters.value.maxTarget))
   }
 
   // Ordenar por fecha objetivo (más próximas primero)
-  return filtered.sort((a, b) => new Date(a.fechaObjetivo) - new Date(b.fechaObjetivo))
+  return filtered.sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
+})
+
+const currencySymbol = computed(() => {
+  switch (props.currencyCode) {
+    case 'USD': return '$';
+    case 'EUR': return '€';
+    case 'PEN': default: return 'S/';
+  }
 })
 
 // Funciones
@@ -301,8 +310,8 @@ const selectGoal = (meta) => {
 }
 
 const editGoal = (meta) => {
-  const progress = Math.round((meta.montoActual / meta.montoObjetivo) * 100)
-  if (confirm(`¿Estás seguro de que quieres editar la meta "${meta.nombre}"?\n\nObjetivo: $${formatAmount(meta.montoObjetivo)}\nActual: $${formatAmount(meta.montoActual)}\nProgreso: ${progress}%\nCategoría: ${meta.categoria}`)) {
+  const progress = Math.round((meta.currentAmount / meta.targetAmount) * 100)
+  if (confirm(`¿Estás seguro de que quieres editar la meta "${meta.name}"?\n\nObjetivo: ${{ currencySymbol }} {{ formatAmount(meta.targetAmount) }}\nActual: ${{ currencySymbol }} {{ formatAmount(meta.currentAmount) }}\nProgreso: ${progress}%\nCategoría: ${meta.category}`)) {
     selectedItem.value = { ...meta }
     showEditModal.value = true
   }
@@ -340,8 +349,8 @@ const handleSaveEdit = async (updatedData) => {
 const deleteGoal = async (goalId) => {
   const meta = props.metas.find(m => m._id === goalId)
   if (meta) {
-    const progress = Math.round((meta.montoActual / meta.montoObjetivo) * 100)
-    const warningMessage = `⚠️ ADVERTENCIA ⚠️\n\n¿Estás seguro de que quieres ELIMINAR esta meta?\n\n🎯 Nombre: ${meta.nombre}\n💰 Objetivo: $${formatAmount(meta.montoObjetivo)}\n💵 Actual: $${formatAmount(meta.montoActual)}\n📊 Progreso: ${progress}%\n🏷️ Categoría: ${meta.categoria}\n📅 Fecha objetivo: ${formatDate(meta.fechaObjetivo)}\n📝 Descripción: ${meta.descripcion || 'Sin descripción'}\n\n❌ Esta acción NO se puede deshacer y eliminará permanentemente el registro.`
+    const progress = Math.round((meta.currentAmount / meta.targetAmount) * 100)
+    const warningMessage = `⚠️ ADVERTENCIA ⚠️\n\n¿Estás seguro de que quieres ELIMINAR esta meta?\n\n🎯 Nombre: ${meta.name}\n💰 Objetivo: ${{ currencySymbol }} {{ formatAmount(meta.targetAmount) }}\n💵 Actual: ${{ currencySymbol }} {{ formatAmount(meta.currentAmount) }}\n📊 Progreso: ${progress}%\n🏷️ Categoría: ${meta.category}\n📅 Fecha objetivo: ${formatDate(meta.deadline)}\n📝 Descripción: ${meta.description || 'Sin descripción'}\n\n❌ Esta acción NO se puede deshacer y eliminará permanentemente el registro.`
     
     if (confirm(warningMessage)) {
       try {

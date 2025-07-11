@@ -58,16 +58,6 @@
                 </select>
               </div>
 
-              <!-- Tipo -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tipo</label>
-                <select v-model="filters.tipo" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
-                  <option value="">Todos</option>
-                  <option value="recibido">Recibidos</option>
-                  <option value="otorgado">Otorgados</option>
-                </select>
-              </div>
-
               <!-- Motivo -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Motivo</label>

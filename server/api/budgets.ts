@@ -6,6 +6,7 @@ import { db } from '../database/db'
 // Función para mapear presupuesto de español a inglés
 const mapPresupuestoToBudget = (presupuesto: any) => ({
   _id: presupuesto._id,
+  name: presupuesto.name ?? presupuesto.titulo ?? presupuesto.nombre ?? '',
   category: presupuesto.categoria,
   totalBudget: presupuesto.monto ?? presupuesto.monto_total,
   spentAmount: presupuesto.gastado ?? presupuesto.monto_gastado,

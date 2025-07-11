@@ -39,7 +39,7 @@
                 </div>
                 <div class="flex justify-between">
                   <span class="text-sm text-gray-600 dark:text-gray-400">Total presupuesto:</span>
-                  <span class="font-semibold text-indigo-600 dark:text-indigo-400">${{ formatAmount(totalBudgetAmount) }}</span>
+                  <span class="font-semibold text-indigo-600 dark:text-indigo-400">{{ currencySymbol }}{{ formatAmount(totalBudgetAmount) }}</span>
                 </div>
               </div>
             </div>
@@ -108,7 +108,7 @@
             <!-- Header de la lista -->
             <div class="flex items-center justify-between mb-6">
               <div>
-                <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                <h4 class="font-medium text-gray-900 dark:text-white">
                   Presupuestos ({{ filteredBudgets.length }})
                 </h4>
                 <p class="text-sm text-gray-600 dark:text-gray-400">
@@ -131,33 +131,33 @@
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-full flex items-center justify-center"
-                         :class="presupuesto.activo ? 'bg-indigo-200 dark:bg-indigo-900' : 'bg-gray-200 dark:bg-gray-700'">
+                         :class="presupuesto.active ? 'bg-indigo-200 dark:bg-indigo-900' : 'bg-gray-200 dark:bg-gray-700'">
                       <span class="text-xl">
-                        {{ presupuesto.activo ? '📊' : '⏸️' }}
+                        {{ presupuesto.active ? '📊' : '⏸️' }}
                       </span>
                     </div>
                     <div>
-                      <h5 class="font-medium text-gray-900 dark:text-white">{{ presupuesto.nombre }}</h5>
-                      <p class="text-sm text-gray-600 dark:text-gray-400">{{ presupuesto.categoria }}</p>
+                      <h5 class="text-lg font-semibold text-gray-900 dark:text-white">{{ presupuesto.name }}</h5>
+                      <p class="text-sm text-gray-600 dark:text-gray-400">{{ presupuesto.category }}</p>
                       <p class="text-xs text-gray-500 dark:text-gray-500">
-                        Período: {{ presupuesto.periodo }} | 
-                        Inicio: {{ formatDate(presupuesto.fechaInicio) }}
+                        Período: {{ presupuesto.period }} | 
+                        Inicio: {{ formatDate(presupuesto.createdAt) }}
                       </p>
                     </div>
                   </div>
                   <div class="text-right">
                     <p class="text-lg font-semibold text-indigo-600 dark:text-indigo-400">
-                      ${{ formatAmount(presupuesto.monto) }}
+                      {{ currencySymbol }}{{ formatAmount(presupuesto.totalBudget) }}
                     </p>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                      Gastado: ${{ formatAmount(presupuesto.gastado || 0) }}
+                      Gastado: {{ currencySymbol }}{{ formatAmount(presupuesto.spentAmount || 0) }}
                     </p>
                     <div class="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
                       <div class="bg-indigo-500 h-2 rounded-full" 
-                           :style="{ width: `${Math.min(((presupuesto.gastado || 0) / presupuesto.monto) * 100, 100)}%` }"></div>
+                           :style="{ width: `${Math.min(((presupuesto.spentAmount || 0) / presupuesto.totalBudget) * 100, 100)}%` }"></div>
                     </div>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {{ Math.round(((presupuesto.gastado || 0) / presupuesto.monto) * 100) }}% usado
+                      {{ Math.round(((presupuesto.spentAmount || 0) / presupuesto.totalBudget) * 100) }}% usado
                     </p>
                     <div class="flex items-center gap-2 mt-2">
                       <button @click.stop="editBudget(presupuesto)" 
@@ -202,7 +202,8 @@ const props = defineProps({
   presupuestos: {
     type: Array,
     default: () => []
-  }
+  },
+  currencyCode: { type: String, default: 'PEN' }
 })
 
 const emit = defineEmits(['close', 'refresh'])
@@ -222,22 +223,30 @@ const selectedItem = ref(null)
 
 // Computed properties
 const categories = computed(() => {
-  const cats = new Set(props.presupuestos.map(p => p.categoria))
+  const cats = new Set(props.presupuestos.map(p => p.category))
   return Array.from(cats).sort()
 })
 
 const activeBudgets = computed(() => {
-  return props.presupuestos.filter(p => p.activo).length
+  return props.presupuestos.filter(p => p.active).length
 })
 
 const inactiveBudgets = computed(() => {
-  return props.presupuestos.filter(p => !p.activo).length
+  return props.presupuestos.filter(p => !p.active).length
 })
 
 const totalBudgetAmount = computed(() => {
   return props.presupuestos
-    .filter(p => p.activo)
-    .reduce((sum, p) => sum + (p.monto || 0), 0)
+    .filter(p => p.active)
+    .reduce((sum, p) => sum + (p.totalBudget || 0), 0)
+})
+
+const currencySymbol = computed(() => {
+  switch (props.currencyCode) {
+    case 'USD': return '$';
+    case 'EUR': return '€';
+    case 'PEN': default: return 'S/';
+  }
 })
 
 const filteredBudgets = computed(() => {
@@ -246,34 +255,34 @@ const filteredBudgets = computed(() => {
   // Filtrar por estado
   if (filters.value.status) {
     if (filters.value.status === 'activo') {
-      filtered = filtered.filter(p => p.activo)
+      filtered = filtered.filter(p => p.active)
     } else if (filters.value.status === 'inactivo') {
-      filtered = filtered.filter(p => !p.activo)
+      filtered = filtered.filter(p => !p.active)
     }
   }
 
   // Filtrar por categoría
   if (filters.value.category) {
-    filtered = filtered.filter(p => p.categoria === filters.value.category)
+    filtered = filtered.filter(p => p.category === filters.value.category)
   }
 
   // Filtrar por período
   if (filters.value.period) {
-    filtered = filtered.filter(p => p.periodo === filters.value.period)
+    filtered = filtered.filter(p => p.period === filters.value.period)
   }
 
   // Filtrar por monto mínimo
   if (filters.value.minAmount) {
-    filtered = filtered.filter(p => p.monto >= Number(filters.value.minAmount))
+    filtered = filtered.filter(p => p.totalBudget >= Number(filters.value.minAmount))
   }
 
   // Filtrar por monto máximo
   if (filters.value.maxAmount) {
-    filtered = filtered.filter(p => p.monto <= Number(filters.value.maxAmount))
+    filtered = filtered.filter(p => p.totalBudget <= Number(filters.value.maxAmount))
   }
 
   // Ordenar por fecha de inicio (más recientes primero)
-  return filtered.sort((a, b) => new Date(b.fechaInicio) - new Date(a.fechaInicio))
+  return filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 })
 
 // Funciones
@@ -297,8 +306,8 @@ const selectBudget = (presupuesto) => {
 }
 
 const editBudget = (presupuesto) => {
-  const usage = Math.round(((presupuesto.gastado || 0) / presupuesto.monto) * 100)
-  if (confirm(`¿Estás seguro de que quieres editar el presupuesto "${presupuesto.nombre}"?\n\nMonto: $${formatAmount(presupuesto.monto)}\nGastado: $${formatAmount(presupuesto.gastado || 0)}\nUso: ${usage}%\nCategoría: ${presupuesto.categoria}`)) {
+  const usage = Math.round(((presupuesto.spentAmount || 0) / presupuesto.totalBudget) * 100)
+  if (confirm(`¿Estás seguro de que quieres editar el presupuesto "${presupuesto.name}"?\n\nMonto: {{ currencySymbol }}{{ formatAmount(presupuesto.totalBudget) }}\nGastado: {{ currencySymbol }}{{ formatAmount(presupuesto.spentAmount || 0) }}\nUso: ${usage}%\nCategoría: ${presupuesto.category}`)) {
     selectedItem.value = { ...presupuesto }
     showEditModal.value = true
   }
@@ -336,8 +345,8 @@ const handleSaveEdit = async (updatedData) => {
 const deleteBudget = async (budgetId) => {
   const presupuesto = props.presupuestos.find(p => p._id === budgetId)
   if (presupuesto) {
-    const usage = Math.round(((presupuesto.gastado || 0) / presupuesto.monto) * 100)
-    const warningMessage = `⚠️ ADVERTENCIA ⚠️\n\n¿Estás seguro de que quieres ELIMINAR este presupuesto?\n\n📊 Nombre: ${presupuesto.nombre}\n💰 Monto: $${formatAmount(presupuesto.monto)}\n💸 Gastado: $${formatAmount(presupuesto.gastado || 0)}\n📈 Uso: ${usage}%\n🏷️ Categoría: ${presupuesto.categoria}\n📅 Período: ${presupuesto.periodo}\n📅 Fecha de inicio: ${formatDate(presupuesto.fechaInicio)}\n📊 Estado: ${presupuesto.activo ? 'Activo' : 'Inactivo'}\n\n❌ Esta acción NO se puede deshacer y eliminará permanentemente el registro.`
+    const usage = Math.round(((presupuesto.spentAmount || 0) / presupuesto.totalBudget) * 100)
+    const warningMessage = `⚠️ ADVERTENCIA ⚠️\n\n¿Estás seguro de que quieres ELIMINAR este presupuesto?\n\n📊 Nombre: ${presupuesto.name}\n💰 Monto: {{ currencySymbol }}{{ formatAmount(presupuesto.totalBudget) }}\n💸 Gastado: {{ currencySymbol }}{{ formatAmount(presupuesto.spentAmount || 0) }}\n📈 Uso: ${usage}%\n🏷️ Categoría: ${presupuesto.category}\n📅 Período: ${presupuesto.period}\n📅 Fecha de inicio: ${formatDate(presupuesto.createdAt)}\n📊 Estado: ${presupuesto.active ? 'Activo' : 'Inactivo'}\n\n❌ Esta acción NO se puede deshacer y eliminará permanentemente el registro.`
     
     if (confirm(warningMessage)) {
       try {

@@ -148,7 +148,7 @@
           <TransactionsManagerModal
             v-if="showTransactionsModal"
             :is-open="showTransactionsModal"
-            :transactions="transactions"
+            :transactions="transactionsMapped"
             @close="closeTransactionsModal"
             @refresh="loadData"
           />
@@ -243,13 +243,13 @@ const totalLoans = computed(() => {
 })
 
 const activeGoals = computed(() => {
-  return savingsGoals.value.filter(g => g.montoActual < g.montoObjetivo).length
+  return savingsGoals.value.filter(g => g.currentAmount < g.targetAmount).length
 })
 
 const goalsProgress = computed(() => {
   if (savingsGoals.value.length === 0) return 0
-  const totalCurrent = savingsGoals.value.reduce((sum, g) => sum + (g.montoActual || 0), 0)
-  const totalTarget = savingsGoals.value.reduce((sum, g) => sum + (g.montoObjetivo || 0), 0)
+  const totalCurrent = savingsGoals.value.reduce((sum, g) => sum + (g.currentAmount || 0), 0)
+  const totalTarget = savingsGoals.value.reduce((sum, g) => sum + (g.targetAmount || 0), 0)
   return totalTarget > 0 ? Math.round((totalCurrent / totalTarget) * 100) : 0
 })
 
@@ -261,6 +261,19 @@ const totalBudget = computed(() => {
   return budgets.value
     .filter(b => b.activo)
     .reduce((sum, b) => sum + (b.monto || 0), 0)
+})
+
+// Mapeo para asegurar campos correctos en español
+const transactionsMapped = computed(() => {
+  return transactions.value.map(t => ({
+    _id: t._id,
+    descripcion: t.descripcion || t.description || 'Sin descripción',
+    monto: t.monto !== undefined ? t.monto : (t.amount !== undefined ? t.amount : 0),
+    categoria: t.categoria || t.category || 'Sin categoría',
+    fecha: t.fecha || t.date || '',
+    tipo: t.tipo || t.type || 'gasto',
+    cuentaId: t.cuentaId || t.accountId || ''
+  }))
 })
 
 // Funciones para manejar los modales

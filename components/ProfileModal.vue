@@ -33,8 +33,8 @@
             <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <span>👤</span> Información Personal
             </h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
                 <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Nombre Completo</label>
                 <p class="text-gray-900 dark:text-white font-medium">{{ cliente.nombre }} {{ cliente.apellido }}</p>
               </div>
@@ -68,7 +68,7 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Salario Mensual</label>
-                <p class="text-gray-900 dark:text-white font-medium">${{ formatAmount(cliente.salario_mensual) }}</p>
+                <p class="text-gray-900 dark:text-white font-medium">{{ currencySymbol }} {{ formatAmount(cliente.salario_mensual) }}</p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Estado Civil</label>
@@ -125,7 +125,7 @@
                   </span>
                 </div>
                 <p class="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                  ${{ formatAmount(cuenta.saldo) }}
+                  {{ currencySymbol }} {{ formatAmount(cuenta.saldo) }}
                 </p>
                 <div v-if="cuenta.banco" class="text-sm text-gray-600 dark:text-gray-400">
                   <p>{{ cuenta.banco }}</p>
@@ -153,8 +153,8 @@
                        :style="{ width: ((meta.monto_actual / meta.monto_objetivo) * 100) + '%' }"></div>
                 </div>
                 <div class="flex justify-between text-sm">
-                  <span class="text-yellow-700 dark:text-yellow-300">${{ formatAmount(meta.monto_actual) }}</span>
-                  <span class="text-gray-500 dark:text-gray-400">Meta: ${{ formatAmount(meta.monto_objetivo) }}</span>
+                  <span class="text-yellow-700 dark:text-yellow-300">{{ currencySymbol }} {{ formatAmount(meta.monto_actual) }}</span>
+                  <span class="text-gray-500 dark:text-gray-400">Meta: {{ currencySymbol }} {{ formatAmount(meta.monto_objetivo) }}</span>
                 </div>
               </div>
             </div>
@@ -172,9 +172,9 @@
                      class="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
                   <h5 class="font-medium text-gray-900 dark:text-white">{{ prestamo.nombre }}</h5>
                   <p class="text-sm text-gray-600 dark:text-gray-400">{{ prestamo.motivo }}</p>
-                  <p class="text-lg font-bold text-blue-600 dark:text-blue-400">${{ formatAmount(prestamo.monto) }}</p>
+                  <p class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ currencySymbol }} {{ formatAmount(prestamo.monto) }}</p>
                   <p class="text-xs text-gray-500 dark:text-gray-400">
-                    {{ prestamo.numero_cuotas }} cuotas de ${{ formatAmount(prestamo.valor_cuota) }}
+                    {{ prestamo.numero_cuotas }} cuotas de {{ currencySymbol }} {{ formatAmount(prestamo.valor_cuota) }}
                   </p>
                 </div>
               </div>
@@ -190,24 +190,35 @@
                      class="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
                   <h5 class="font-medium text-gray-900 dark:text-white">{{ deuda.nombre }}</h5>
                   <p class="text-sm text-gray-600 dark:text-gray-400">{{ deuda.motivo }}</p>
-                  <p class="text-lg font-bold text-red-600 dark:text-red-400">${{ formatAmount(deuda.monto) }}</p>
+                  <p class="text-lg font-bold text-red-600 dark:text-red-400">{{ currencySymbol }} {{ formatAmount(deuda.monto) }}</p>
                   <p class="text-xs text-gray-500 dark:text-gray-400">
-                    {{ deuda.numero_cuotas }} cuotas de ${{ formatAmount(deuda.valor_cuota) }}
+                    {{ deuda.numero_cuotas }} cuotas de {{ currencySymbol }} {{ formatAmount(deuda.valor_cuota) }}
                   </p>
                 </div>
               </div>
-            </div>
           </div>
+        </div>
 
           <!-- Configuraciones -->
           <div class="bg-purple-50 dark:bg-purple-900 rounded-xl p-6">
             <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <span>⚙️</span> Configuraciones
             </h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
                 <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Moneda Principal</label>
-                <p class="text-gray-900 dark:text-white font-medium">{{ cliente.configuraciones.moneda_principal }}</p>
+                <select
+                  v-model="selectedCurrency"
+                  @change="updateCurrency"
+                  class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2"
+                  :disabled="isUpdatingCurrency"
+                >
+                  <option value="PEN">PEN - Sol peruano</option>
+                  <option value="USD">USD - Dólar estadounidense</option>
+                  <option value="EUR">EUR - Euro</option>
+                </select>
+                <p v-if="currencyUpdateSuccess" class="text-green-600 text-xs mt-1">Moneda actualizada correctamente</p>
+                <p v-if="currencyUpdateError" class="text-red-600 text-xs mt-1">Error al actualizar la moneda</p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Idioma</label>
@@ -216,21 +227,21 @@
               <div>
                 <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Tema</label>
                 <p class="text-gray-900 dark:text-white font-medium capitalize">{{ cliente.configuraciones.tema }}</p>
-              </div>
-              <div>
+          </div>
+          <div>
                 <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Notificaciones</label>
                 <p class="text-gray-900 dark:text-white font-medium">{{ cliente.configuraciones.notificaciones ? 'Activadas' : 'Desactivadas' }}</p>
               </div>
             </div>
           </div>
         </div>
-      </div>
+        </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 const props = defineProps({
   isOpen: Boolean
@@ -242,6 +253,10 @@ const emit = defineEmits(['close'])
 const cliente = ref(null)
 const isLoading = ref(false)
 const error = ref(null)
+const selectedCurrency = ref('')
+const isUpdatingCurrency = ref(false)
+const currencyUpdateSuccess = ref(false)
+const currencyUpdateError = ref(false)
 
 // Función para cargar los datos del cliente
 const loadClienteData = async () => {
@@ -294,6 +309,53 @@ import { watch } from 'vue'
 watch(() => props.isOpen, (newValue) => {
   if (newValue) {
     loadClienteData()
+  }
+})
+
+watch(
+  () => cliente.value?.configuraciones?.moneda_principal,
+  (newVal) => {
+    if (newVal) selectedCurrency.value = newVal
+  },
+  { immediate: true }
+)
+
+const updateCurrency = async () => {
+  isUpdatingCurrency.value = true
+  currencyUpdateSuccess.value = false
+  currencyUpdateError.value = false
+  try {
+    const res = await fetch('http://localhost:3000/api/clientes', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ moneda_principal: selectedCurrency.value })
+    })
+    const data = await res.json()
+    if (data.success) {
+      currencyUpdateSuccess.value = true
+      if (cliente.value?.configuraciones) {
+        cliente.value.configuraciones.moneda_principal = selectedCurrency.value
+      }
+    } else {
+      currencyUpdateError.value = true
+    }
+  } catch (e) {
+    currencyUpdateError.value = true
+  } finally {
+    isUpdatingCurrency.value = false
+    setTimeout(() => {
+      currencyUpdateSuccess.value = false
+      currencyUpdateError.value = false
+    }, 2000)
+  }
+}
+
+const currencyCode = computed(() => selectedCurrency.value || cliente.value?.configuraciones?.moneda_principal || 'PEN')
+const currencySymbol = computed(() => {
+  switch (currencyCode.value) {
+    case 'USD': return '$';
+    case 'EUR': return '€';
+    case 'PEN': default: return 'S/';
   }
 })
 </script> 

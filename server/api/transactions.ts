@@ -34,31 +34,80 @@ export default defineEventHandler(async (event) => {
     const accountId = consulta.accountId as string
     const limit = consulta.limit ? parseInt(consulta.limit as string) : undefined
 
-    let transacciones = []
     const dbData = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
-    transacciones = dbData.clientes[0]?.transacciones || []
-
+    const cliente = dbData.clientes[0]
+    const ingresos = cliente.ingresos || []
+    const gastos = cliente.gastos || []
+    // Unir ingresos y gastos como transacciones
+    let transacciones = [
+      ...ingresos.map((i: any) => ({
+        _id: i._id,
+        descripcion: i.descripcion || i.titulo,
+        monto: i.monto,
+        tipo: 'ingreso',
+        categoria: i.categoria,
+        fecha: i.fecha,
+        cuentaId: i.cuentaId
+      })),
+      ...gastos.map((g: any) => ({
+        _id: g._id,
+        descripcion: g.descripcion || g.titulo,
+        monto: g.monto,
+        tipo: 'gasto',
+        categoria: g.categoria,
+        fecha: g.fecha,
+        cuentaId: g.cuentaId
+      }))
+    ]
     // Filtrar por cuenta si se especifica
     if (accountId) {
-      transacciones = transacciones.filter((t: any) => t.cuentaId === accountId)
+      transacciones = transacciones.filter((t) => t.cuentaId === accountId)
     }
-
-    // Ordenar por fecha (más recientes primero)
-    transacciones.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
-
+    // Ordenar por fecha descendente
+    transacciones.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
     // Limitar resultados si se especifica
     if (limit) {
       transacciones = transacciones.slice(0, limit)
     }
-
-    return transacciones
+    // Aplicar mapeo a todas las transacciones retornadas
+    return transacciones.map(mapTransaccionToTransaction)
   }
 
   if (metodo === 'POST') {
     const cuerpo = await readBody(event)
     const transaccionData = mapTransactionToTransaccion(cuerpo)
-    const nuevaTransaccion = db.createTransaccion(transaccionData)
-    return nuevaTransaccion
+    // Leer y modificar el archivo db.json directamente
+    const dbData = JSON.parse(fs.readFileSync(dbPath, 'utf8'))
+    const cliente = dbData.clientes[0]
+    if (transaccionData.tipo === 'ingreso') {
+      if (!cliente.ingresos) cliente.ingresos = []
+      const nuevoIngreso = {
+        _id: String(cliente.ingresos.length + 1),
+        titulo: cuerpo.title || cuerpo.description || '',
+        descripcion: cuerpo.description || '',
+        monto: transaccionData.monto,
+        categoria: transaccionData.categoria,
+        fecha: transaccionData.fecha,
+        cuentaId: transaccionData.cuentaId
+      }
+      cliente.ingresos.push(nuevoIngreso)
+      fs.writeFileSync(dbPath, JSON.stringify(dbData, null, 2))
+      return mapTransaccionToTransaction({ ...nuevoIngreso, tipo: 'ingreso' })
+    } else {
+      if (!cliente.gastos) cliente.gastos = []
+      const nuevoGasto = {
+        _id: String(cliente.gastos.length + 1),
+        titulo: cuerpo.title || cuerpo.description || '',
+        descripcion: cuerpo.description || '',
+        monto: transaccionData.monto,
+        categoria: transaccionData.categoria,
+        fecha: transaccionData.fecha,
+        cuentaId: transaccionData.cuentaId
+      }
+      cliente.gastos.push(nuevoGasto)
+      fs.writeFileSync(dbPath, JSON.stringify(dbData, null, 2))
+      return mapTransaccionToTransaction({ ...nuevoGasto, tipo: 'gasto' })
+    }
   }
 
   if (metodo === 'PUT') {
@@ -68,7 +117,7 @@ export default defineEventHandler(async (event) => {
     if (!transaccionActualizada) {
       return { error: 'Transacción no encontrada' }
     }
-    return transaccionActualizada
+    return mapTransaccionToTransaction(transaccionActualizada)
   }
 
   if (metodo === 'DELETE') {

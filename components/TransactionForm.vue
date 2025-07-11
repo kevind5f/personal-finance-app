@@ -261,15 +261,7 @@ export default defineComponent({
       }
       error.value = ''
       emit('submit', { ...form.value })
-      form.value = {
-        title: '',
-        amount: 0,
-        category: '',
-        subcategory: '',
-        date: new Date().toISOString().split('T')[0],
-        accountId: '',
-        type: props.isIncome ? 'income' : 'expense'
-      }
+      // Ya no se limpia el formulario aquí. El padre debe limpiar al cerrar el modal.
     }
 
     return {

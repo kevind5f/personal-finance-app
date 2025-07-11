@@ -22,7 +22,7 @@
           </div>
           <div class="text-right">
             <p class="text-2xl font-bold" :class="account?.balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-              ${{ formatAmount(account?.balance) }}
+              {{ currencySymbol }} {{ formatAmount(account?.balance) }}
             </p>
             <p class="text-sm text-gray-500 dark:text-gray-400">
               {{ account?.balance >= 0 ? 'Disponible' : 'Deuda' }}
@@ -94,7 +94,7 @@
               </div>
               <div class="text-right">
                 <p class="text-lg font-semibold" :class="(transaction.tipo ?? transaction.type) === 'ingreso' || (transaction.tipo ?? transaction.type) === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-                  {{ (transaction.tipo ?? transaction.type) === 'ingreso' || (transaction.tipo ?? transaction.type) === 'income' ? '+' : '-' }}${{ formatAmount(transaction.monto ?? transaction.amount) }}
+                  {{ (transaction.tipo ?? transaction.type) === 'ingreso' || (transaction.tipo ?? transaction.type) === 'income' ? '+' : '-' }}{{ currencySymbol }} {{ formatAmount(transaction.monto ?? transaction.amount) }}
                 </p>
                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(transaction.fecha ?? transaction.date) }}</p>
               </div>
@@ -107,13 +107,16 @@
 </template>
 
 <script setup>
+import { computed, ref, watch } from 'vue'
+
 const props = defineProps({
   isOpen: Boolean,
   account: Object,
   allTransactions: {
     type: Array,
     default: () => []
-  }
+  },
+  currencyCode: { type: String, default: 'PEN' }
 })
 
 const emit = defineEmits(['close'])
@@ -143,9 +146,8 @@ const formatDate = (dateString) => {
 
 // Filtrar transacciones
 const filteredTransactions = computed(() => {
-  let txs = props.allTransactions.filter(
-    t => t.accountId === props.account?._id
-  )
+  let txs = props.allTransactions.filter(t => t.accountId === props.account?._id)
+  
   if (filterType.value !== 'all') {
     txs = txs.filter(t => {
       const tipo = t.tipo ?? t.type
@@ -154,7 +156,8 @@ const filteredTransactions = computed(() => {
       return true
     })
   }
-  return txs.slice().sort((a, b) => new Date((b.fecha ?? b.date)) - new Date((a.fecha ?? a.date))).slice(0, 5)
+  
+  return txs.slice().sort((a, b) => new Date((b.fecha ?? b.date)) - new Date((a.fecha ?? a.date))).slice(0, 10)
 })
 
 // Cargar transacciones de la cuenta
@@ -192,5 +195,13 @@ watch(() => props.isOpen, (newValue) => {
 // Resetear filtro cuando cambia la cuenta
 watch(() => props.account, () => {
   filterType.value = 'all'
+})
+
+const currencySymbol = computed(() => {
+  switch (props.currencyCode) {
+    case 'USD': return '$';
+    case 'EUR': return '€';
+    case 'PEN': default: return 'S/';
+  }
 })
 </script> 
