@@ -235,6 +235,7 @@ import GoalForm from '../components/GoalForm.vue'
 import BudgetForm from '../components/BudgetForm.vue'
 import LoanForm from '../components/LoanForm.vue'
 import { useRouter } from 'vue-router'
+import { formatAmount } from '../utils/format'
 
 interface Account {
   _id: string

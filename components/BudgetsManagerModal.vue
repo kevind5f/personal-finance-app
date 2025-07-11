@@ -196,6 +196,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import EditModal from './EditModal.vue'
+import { formatAmount, formatDate } from '@/utils/format'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -367,22 +368,6 @@ const deleteBudget = async (budgetId) => {
       }
     }
   }
-}
-
-const formatAmount = (amount) => {
-  if (amount === undefined || amount === null) return '0.00'
-  const num = Number(amount)
-  return isNaN(num) ? '0.00' : num.toFixed(2)
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  const date = new Date(dateString)
-  return date.toLocaleDateString('es-ES', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  })
 }
 
 // Limpiar filtros cuando se cierra el modal

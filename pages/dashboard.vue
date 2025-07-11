@@ -429,6 +429,7 @@ import DebtLoanDetailModal from '~/components/DebtLoanDetailModal.vue'
 import TransferForm from '~/components/TransferForm.vue'
 import ProfileModal from '~/components/ProfileModal.vue'
 import { useRouter } from 'vue-router'
+import { formatAmount } from '~/utils/format'
 
 // Estado de los modales
 const showTransactionModal = ref(false)
@@ -840,12 +841,6 @@ const closeReportModal = () => {
 
 const showAccountOperations = (account) => {
   openAccountOperations(account)
-}
-
-const formatAmount = (amount) => {
-  if (amount === undefined || amount === null) return '0.00'
-  const num = Number(amount)
-  return isNaN(num) ? '0.00' : num.toFixed(2)
 }
 
 const formatDate = (dateString) => {

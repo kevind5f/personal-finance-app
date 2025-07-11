@@ -243,6 +243,7 @@
 
 <script setup>
 import { watch, onMounted, computed } from 'vue'
+import { formatAmount, formatDate } from '@/utils/format'
 
 console.log('ReportModal montado');
 
@@ -288,24 +289,6 @@ const currencySymbol = computed(() => {
     case 'PEN': default: return 'S/';
   }
 })
-
-// Función de utilidad para formatear montos
-const formatAmount = (amount) => {
-  if (amount === undefined || amount === null) return '0.00'
-  const num = Number(amount)
-  return isNaN(num) ? '0.00' : num.toFixed(2)
-}
-
-// Función para formatear fechas
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  const date = new Date(dateString)
-  return date.toLocaleDateString('es-ES', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  })
-}
 
 // Función para calcular porcentajes
 const getPercentage = (value, max) => {

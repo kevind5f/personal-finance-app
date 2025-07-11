@@ -261,6 +261,7 @@ import AccountForm from '~/components/AccountForm.vue'
 import SubcategoryModal from '~/components/SubcategoryModal.vue'
 import CategoryModal from '~/components/CategoryModal.vue'
 import { ref, onMounted, computed } from 'vue'
+import { formatAmount } from '~/utils/format'
 
 // Estado de carga y error
 const isLoading = ref(true)
@@ -268,13 +269,6 @@ const error = ref(null)
 
 // Estado para las cuentas (cargadas desde API)
 const accounts = ref([])
-
-// Función de utilidad para formatear montos
-const formatAmount = (amount) => {
-  if (amount === undefined || amount === null) return '0.00'
-  const num = Number(amount)
-  return isNaN(num) ? '0.00' : num.toFixed(2)
-}
 
 // Función para cargar las cuentas desde la API
 const loadAccounts = async () => {

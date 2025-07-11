@@ -267,22 +267,34 @@ function editExpense(expense: Expense) {
 
 async function deleteExpense(id: string) {
   if (confirm('Are you sure you want to delete this expense?')) {
-    // Add delete logic here
+    // Simulación: elimina del array local
+    expenses.value = expenses.value.filter(e => e.id !== id)
+    // Aquí deberías agregar la lógica real de backend si existe
   }
 }
 
 async function handleSubmit() {
-  // Add submit logic here
-  showAddExpenseModal.value = false;
+  // Simulación: agrega o edita en el array local
+  if (form.amount && form.category && form.account && form.date) {
+    const newExpense = { 
+      ...form, 
+      id: Date.now().toString(),
+      amount: Number(form.amount) // Convertir a number
+    }
+    expenses.value.push(newExpense)
+    showAddExpenseModal.value = false
+    // Aquí deberías agregar la lógica real de backend si existe
+  }
 }
 
-// Fetch data
 async function fetchExpenses() {
-  // Add fetch logic here
+  // Simulación: carga de ejemplo
+  expenses.value = [] // Aquí deberías hacer fetch real si tienes endpoint
 }
 
 async function fetchAccounts() {
-  // Add fetch logic here
+  // Simulación: carga de ejemplo
+  accounts.value = [] // Aquí deberías hacer fetch real si tienes endpoint
 }
 
 // Initialize
