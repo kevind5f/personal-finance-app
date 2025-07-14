@@ -1,7 +1,6 @@
 import { defineEventHandler } from 'h3'
 import fs from 'fs'
 import path from 'path'
-import { db } from '../database/db'
 
 // Función para mapear meta de español a inglés
 const mapMetaToGoal = (meta: any) => ({

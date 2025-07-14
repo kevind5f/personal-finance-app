@@ -1,7 +1,6 @@
 import { defineEventHandler, getQuery, readBody } from 'h3'
 import fs from 'fs'
 import path from 'path'
-import { db } from '../database/db'
 
 // Función para mapear presupuesto de español a inglés
 const mapPresupuestoToBudget = (presupuesto: any) => ({
